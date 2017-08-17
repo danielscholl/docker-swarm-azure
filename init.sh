@@ -9,7 +9,7 @@
 ###############################
 ## ARGUMENT INPUT            ##
 ###############################
-usage() { echo "Usage: init.sh <unique>" 1>&2; exit 1; }
+usage() { echo "Usage: init.sh <unique> <count>" 1>&2; exit 1; }
 
 if [ -f ~/.azure/.env ]; then source ~/.azure/.env; fi
 if [ -f ./.env ]; then source ./.env; fi
@@ -39,27 +39,28 @@ az account set --subscription ${AZURE_SUBSCRIPTION}
 
 
 ##############################
-## Temporary Resource Group ##
+## Resource Group Deploy ##
 ##############################
 CATEGORY=${PWD##*/}
 RESOURCE_GROUP=${UNIQUE}-${CATEGORY}
+CONTAINER='rexray'
 
 tput setaf 2; echo "Creating the $RESOURCE_GROUP resource group..." ; tput sgr0
 CreateResourceGroup ${RESOURCE_GROUP} ${AZURE_LOCATION};
 az group show --name ${RESOURCE_GROUP} -ojsonc
 
-# tput setaf 2; echo "Creating the ${UNIQUE} virtual machine..." ; tput sgr0
-# CreateVirtualMachine ${UNIQUE} ${RESOURCE_GROUP}
-# az vm show --name ${UNIQUE} --resource-group ${RESOURCE_GROUP} -ojsonc
+# tput setaf 2; echo "Deploying Template..." ; tput sgr0
+# az group deployment create \
+#   --resource-group ${RESOURCE_GROUP} \
+#   --template-file arm-templates/deployAzure.json \
+#   --parameters @arm-templates/deployAzure.params.json \
+#   --parameters unique=${UNIQUE} serverCount=${COUNT} \
+#   -ojsonc
 
-tput setaf 2; echo "Deploying Template..." ; tput sgr0
-az group deployment create \
-  --resource-group ${RESOURCE_GROUP} \
-  --template-file arm-templates/deployAzure.json \
-  --parameters @arm-templates/deployAzure.params.json \
-  --parameters unique=${UNIQUE} serverCount=${COUNT} \
-  -ojsonc
-
+tput setaf 2; echo "Creating the $CONTAINER blob container..." ; tput sgr0
+STORAGE_ACCOUNT=$(GetStorageAccount $RESOURCE_GROUP)
+CONNECTION=$(GetStorageConnection $RESOURCE_GROUP $STORAGE_ACCOUNT)
+CreateBlobContainer $CONTAINER $CONNECTION
 
 ##############################
 ## Create Ansible Inventory ##
@@ -70,7 +71,7 @@ mkdir -p ${INVENTORY};
 
 tput setaf 2; echo "Retrieving IP Address ..." ; tput sgr0
 
-IP=$(az vm list-ip-addresses --name ${UNIQUE} \
+IP=$(az vm list-ip-addresses \
     --resource-group ${RESOURCE_GROUP}  \
     --query [].virtualMachine.network.publicIpAddresses[].ipAddress -otsv)
 echo ${IP}
@@ -87,9 +88,3 @@ inventory = ${INVENTORY}/hosts
 private_key_file = ~/.ssh/id_rsa
 host_key_checking = false
 EOF1
-
-##########################s
-## Run Ansible Playbook ##
-##########################
-sleep 5
-ansible-playbook ansible/playbooks/initServer.yml
