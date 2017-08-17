@@ -16,11 +16,11 @@
   vars:
     ansible_python_interpreter: "/usr/local/bin/python"
   become: no
-  local_action: wait_for host={{ ansible_host }} state=started port={{ ansible_ssh_port }} delay=35
+  local_action: wait_for host={{ ansible_host }} state=started port={{ ansible_ssh_port }} delay=45
   when: reboot_required_file.stat.exists
 
 - name: Pause for SSH to come alive
-  pause: seconds=30
+  pause: seconds=60
   when: reboot_required_file.stat.exists
 
 - name: Get Uptime

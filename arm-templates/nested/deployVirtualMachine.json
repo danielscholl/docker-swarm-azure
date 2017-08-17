@@ -81,6 +81,18 @@
   },
   "resources": [
     {
+      "comments": "## Availability Set ##",
+      "type": "Microsoft.Compute/availabilitySets",
+      "name": "[variables('AvailabilitySetName')]",
+      "apiVersion": "2016-04-30-preview",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "platformUpdateDomainCount": 5,
+        "platformFaultDomainCount": 2,
+        "managed": true
+      }
+    },
+    {
       "comments": "## Storage Account ##",
       "name": "[variables('storageAccountName')]",
       "type": "Microsoft.Storage/storageAccounts",
@@ -169,6 +181,9 @@
         "nicLoop"
       ],
       "properties": {
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetName'))]"
+        },
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
         },

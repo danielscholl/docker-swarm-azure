@@ -85,6 +85,6 @@ tput setaf 2; echo 'Creating the ansible config file...' ; tput sgr0
 cat > ansible.cfg << EOF1
 [defaults]
 inventory = ${INVENTORY}/hosts
-private_key_file = ~/.ssh/id_rsa
+private_key_file = .ssh/id_rsa
 host_key_checking = false
 EOF1

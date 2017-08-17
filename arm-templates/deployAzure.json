@@ -157,7 +157,7 @@
       }
     },
     {
-      "name": "TemplateVirtualMachine",
+      "name": "TemplateVirtualMachineAV",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "properties": {

@@ -2,3 +2,4 @@ ansible.cfg
 ansible/inventories/
 ansible/playbooks/*.retry
 arm-templates/*.params.json
+.ssh/

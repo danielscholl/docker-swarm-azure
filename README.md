@@ -20,6 +20,15 @@ git clone https://github.com/danielscholl/docker-swarm-azure
 cd docker-swarm-azure
 ```
 
+### Create the private ssh keys
+
+Access to the servers is via a private ssh session and requires the user to create the SSH Keys in the .ssh directory.
+
+```bash
+mkdir .ssh && cd .ssh
+ssh-keygen -t rsa -b 2048 -C "azureuser@email.com" -f id_rsa
+```
+
 ### Create the Environment File
 
 The solution reads environment variables and sources either ~/.azure/.env or {pwd}/.env to retrieve required settings.

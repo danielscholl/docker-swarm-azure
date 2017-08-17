@@ -36,4 +36,10 @@ IP=$(az vm list-ip-addresses -g ${RESOURCE_GROUP} -n ${UNIQUE}${INSTANCE} --quer
 
 echo 'Connecting to' $USER@$IP
 
-ssh -i ~/.ssh/id_rsa $USER@$IP -A
+SSH_KEY="~/.ssh/id_rsa"
+if [ -f .ssh/id_rsa ]; then
+  SSH_KEY=".ssh/id_rsa"
+fi
+
+echo $SSH_KEY
+ssh -i ${SSH_KEY} $USER@$IP -A
