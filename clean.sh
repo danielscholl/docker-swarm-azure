@@ -9,7 +9,7 @@
 ###############################
 ## ARGUMENT INPUT            ##
 ###############################
-usage() { echo "Usage: install.sh <unique> <location>" 1>&2; exit 1; }
+usage() { echo "Usage: install.sh <unique>" 1>&2; exit 1; }
 
 if [ -f ~/.azure/.env ]; then source ~/.azure/.env; fi
 if [ -f ./.env ]; then source ./.env; fi

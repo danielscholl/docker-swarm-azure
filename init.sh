@@ -50,12 +50,12 @@ CreateResourceGroup ${RESOURCE_GROUP} ${AZURE_LOCATION};
 az group show --name ${RESOURCE_GROUP} -ojsonc
 
 # tput setaf 2; echo "Deploying Template..." ; tput sgr0
-# az group deployment create \
-#   --resource-group ${RESOURCE_GROUP} \
-#   --template-file arm-templates/deployAzure.json \
-#   --parameters @arm-templates/deployAzure.params.json \
-#   --parameters unique=${UNIQUE} serverCount=${COUNT} \
-#   -ojsonc
+az group deployment create \
+  --resource-group ${RESOURCE_GROUP} \
+  --template-file arm-templates/deployAzure.json \
+  --parameters @arm-templates/deployAzure.params.json \
+  --parameters unique=${UNIQUE} serverCount=${COUNT} \
+  -ojsonc
 
 tput setaf 2; echo "Creating the $CONTAINER blob container..." ; tput sgr0
 STORAGE_ACCOUNT=$(GetStorageAccount $RESOURCE_GROUP)
