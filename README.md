@@ -119,6 +119,13 @@ ansible-playbook ansible/playbooks/main.yml  # Provision the node Servers
 
 ```
 
+## Script Usage
+
+- init.sh <unique> <count> (provision IaaS into azure)
+- clean.sh <unique> <count> (delete IaaS from azure)
+- connect.sh <unique> <node> (SSH Connect to the node instance)
+- manage.sh <unique> <command> (deprovision/start/stop nodes in azure)
+
 ## REX-Ray
 Consult the full REX-Ray documentation [here](http://rexray.readthedocs.org/en/stable/).
 

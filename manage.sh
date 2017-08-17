@@ -8,7 +8,7 @@
 ###############################
 ## ARGUMENT INPUT            ##
 ###############################
-usage() { echo "Usage: connect.sh <unique> <instance>" 1>&2; exit 1; }
+usage() { echo "Usage: manage.sh <unique> <command>" 1>&2; exit 1; }
 
 if [ -f ~/.azure/.env ]; then source ~/.azure/.env; fi
 if [ -f ./.env ]; then source ./.env; fi
