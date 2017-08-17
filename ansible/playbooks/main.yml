@@ -1,0 +1,65 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    ansible_python_interpreter: "/usr/bin/python3"
+  roles:
+    - patchOS
+    - reboot-server
+    - docker-ce
+    - { role: REX-ray,
+      rexray_service: true,
+      rexray_log_level: warn,
+      rexray_storage_drivers: [azureud],
+      rexray_azure_subscriptionid: '{{ azure_subscriptionid }}',
+      rexray_azure_tenantid: '{{ azure_tenantid }}',
+      rexray_azure_clientid: '{{ azure_clientid }}',
+      rexray_azure_clientsecret: '{{ azure_clientsecret }}',
+      rexray_azure_resourcegroup: '{{ azure_resourcegroup }}',
+      rexray_azure_storageaccount: '{{ azure_storageaccount }}',
+      rexray_azure_storageaccesskey: '{{ azure_storageaccesskey }}',
+      rexray_azure_container: '{{ azure_container }}' }
+    - reboot-server
+
+
+- hosts: manager
+  become: true
+  roles:
+    - swarm-manager
+
+
+- hosts: swarm_manager_bootstrap[0]
+  become: true
+  roles:
+    - swarm-manager-bootstrap
+
+
+- hosts: swarm_manager_operational[0]
+  become: true
+  vars:
+    iface: "{{ swarm_iface | default('eth0') }}"
+  roles:
+    - swarm-manager-operational
+
+
+- hosts: swarm_manager_bootstrap:!swarm_manager_operational
+  become: true
+  vars:
+    token: "{{ hostvars[groups['swarm_manager_operational'][0]]['swarm_manager_token']['stdout'] }}"
+  roles:
+    - swarm-manager-join
+
+
+- hosts: worker
+  become: true
+  roles:
+    - swarm-worker
+
+
+- hosts: swarm_worker_bootstrap
+  become: true
+  vars:
+    token: "{{ hostvars[groups['swarm_manager_operational'][0]]['swarm_worker_token']['stdout'] }}"
+  roles:
+    - swarm-worker-bootstrap
+
