@@ -35,6 +35,12 @@
       "defaultValue": "db",
       "minLength": 1
     },
+    "asName": {
+      "type": "string",
+      "metadata": {
+        "description": "AvailabilitySet Name."
+      }
+    },
     "vmSize": {
       "type": "string",
       "metadata": {
@@ -71,7 +77,7 @@
     }
   },
   "variables": {
-    "AvailabilitySetName": "[concat(parameters('vmName'), '-as')]",
+    "AvailabilitySetName": "[concat(parameters('asName'), '-as')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
     "cleanResourceGroup": "[toLower(replace(resourceGroup().name,'-', ''))]",
     "trimmedName": "[substring(variables('cleanResourceGroup'),0, 5)]",
