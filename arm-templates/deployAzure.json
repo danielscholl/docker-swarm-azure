@@ -157,6 +157,23 @@
       }
     },
     {
+      "name": "TemplateLoadBalancer",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/docker-swarm-azure/master/arm-templates/nested/', 'deployLoadBalancer.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "unique": {
+            "value": "[parameters('unique')]"
+          }
+        }
+      }
+    },
+    {
       "name": "TemplateVirtualMachineAV",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
