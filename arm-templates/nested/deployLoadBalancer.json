@@ -36,7 +36,9 @@
       "type": "Microsoft.Network/loadBalancers",
       "apiVersion": "2015-05-01-preview",
       "location": "[resourceGroup().location]",
-      "dependsOn": [],
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('PublicIpName'))]"
+      ],
       "tags": {
         "displayName": "Internal Load Balancer"
       },
