@@ -150,6 +150,9 @@
         "name": "nicLoop",
         "count": "[parameters('numberOfInstances')]"
       },
+      "dependsOn": [
+        "ipLoop"
+      ],
       "properties": {
         "ipConfigurations": [
           {
