@@ -14,6 +14,13 @@
         "description": "Load Balancer Id to associate VM to."
       }
     },
+    "remoteAccessACL": {
+      "type": "string",
+      "metadata": {
+        "description": "Remote Access CIDR"
+      },
+      "defaultValue": "Internet"
+    },
     "storageAccount": {
       "type": "string",
       "metadata": {
@@ -120,6 +127,34 @@
             }
           }
         }
+      }
+    },
+    {
+      "comments": "## Network Security Group ##",
+      "name": "[concat(parameters('vmName'), '-nsg')]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2015-05-01-preview",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "Network Security Group - Subnet"
+      },
+      "properties": {
+        "securityRules": [
+          {
+            "name": "default-allow-ssh",
+            "properties": {
+              "description": "Allow SSH",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22",
+              "sourceAddressPrefix": "[parameters('remoteAccessACL')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 1000,
+              "direction": "Inbound"
+            }
+          }
+        ]
       }
     },
     {

@@ -31,8 +31,9 @@ fi
 #////////////////////////////////
 CATEGORY=${PWD##*/}
 RESOURCE_GROUP=${UNIQUE}-${CATEGORY}
-echo "Retrieving IP Address for ${UNIQUE}${INSTANCE} in " ${RESOURCE_GROUP}
-IP=$(az vm list-ip-addresses -g ${RESOURCE_GROUP} -n ${UNIQUE}${INSTANCE} --query [].virtualMachine.network.publicIpAddresses[].ipAddress -o tsv)
+echo ${RESOURCE_GROUP}
+echo "Retrieving IP Address for vm${INSTANCE} in " ${RESOURCE_GROUP}
+IP=$(az vm list-ip-addresses -g ${RESOURCE_GROUP} -n vm${INSTANCE} --query [].virtualMachine.network.publicIpAddresses[].ipAddress -o tsv)
 
 echo 'Connecting to' $USER@$IP
 
