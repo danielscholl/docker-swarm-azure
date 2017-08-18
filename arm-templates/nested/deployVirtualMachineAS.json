@@ -123,6 +123,23 @@
       }
     },
     {
+      "comments": "## Public IP Address ##",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[concat(parameters('vmName'), copyindex(), '-ip')]",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "Public IP Address"
+      },
+      "copy": {
+        "name": "ipLoop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+      }
+    },
+    {
       "comments": "## Network Interface ##",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(parameters('vmName'), copyindex(), '-nic')]",
@@ -139,6 +156,9 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName'), copyindex(), '-ip'))]"
+              },
               "subnet": {
                 "id": "[parameters('subnetId')]"
               },
