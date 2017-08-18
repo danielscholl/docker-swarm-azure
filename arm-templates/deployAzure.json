@@ -65,12 +65,19 @@
       "type": "string",
       "defaultValue": "Standard_A1"
     },
-    "serverCount": {
+    "managerCount": {
       "type": "int",
       "metadata": {
         "description": "Number of machines to deploy."
       },
       "defaultValue": 1
+    },
+    "workerCount": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of machines to deploy."
+      },
+      "defaultValue": 0
     },
     "storageAccountType": {
       "type": "string",
@@ -174,7 +181,7 @@
       }
     },
     {
-      "name": "TemplateVirtualMachineAV",
+      "name": "TemplateVirtualMachineManagers",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "properties": {
@@ -200,7 +207,7 @@
             "value": "[parameters('serverSize')]"
           },
           "numberOfInstances": {
-            "value": "[parameters('serverCount')]"
+            "value": "[parameters('managerCount')]"
           },
           "adminUserName": {
             "reference": {
