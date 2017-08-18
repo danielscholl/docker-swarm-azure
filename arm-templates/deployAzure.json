@@ -157,13 +157,13 @@
       }
     },
     {
-      "name": "TemplateVirtualMachineAV",
+      "name": "TemplateVirtualMachineAS",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/docker-swarm-azure/master/arm-templates/nested/', 'deployVirtualMachine.json')]",
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/docker-swarm-azure/master/arm-templates/nested/', 'deployVirtualMachineAS.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
