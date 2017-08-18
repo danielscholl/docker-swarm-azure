@@ -197,7 +197,7 @@
             "value": "[reference('TemplateStorage').outputs.storageAccount.value.key]"
           },
           "vmName": {
-            "value": "vm"
+            "value": "[parameters('serverNamePrefix')]"
           },
           "vmSize": {
             "value": "[parameters('serverSize')]"
