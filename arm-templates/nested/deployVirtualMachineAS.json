@@ -8,6 +8,12 @@
         "description": "Subnet ID to associate VM to."
       }
     },
+    "loadbalancerId": {
+      "type": "string",
+      "metadata": {
+        "description": "Load Balancer Id to associate VM to."
+      }
+    },
     "storageAccount": {
       "type": "string",
       "metadata": {
@@ -135,7 +141,12 @@
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
                 "id": "[parameters('subnetId')]"
-              }
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[concat(parameters('loadbalancerId'), '/backendAddressPools/lbBackEnd')]"
+                }
+              ]
             }
           }
         ]

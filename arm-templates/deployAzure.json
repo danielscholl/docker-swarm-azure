@@ -187,6 +187,9 @@
           "subnetId": {
             "value": "[reference('TemplateVNet').outputs.subnets.value.subnet1Id]"
           },
+          "loadBalancerId": {
+            "value": "[reference('TemplateLoadBalancer').outputs.loadBalancer.value.id]"
+          },
           "storageAccount": {
             "value": "[reference('TemplateStorage').outputs.storageAccount.value.name]"
           },
