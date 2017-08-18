@@ -93,7 +93,7 @@
               "backendPort": 443,
               "idleTimeoutInMinutes": 15
             },
-            "name": "lbrule-http"
+            "name": "lbrule-https"
           }
         ],
         "probes": [
