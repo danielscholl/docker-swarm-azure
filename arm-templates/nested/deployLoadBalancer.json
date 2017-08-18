@@ -60,60 +60,60 @@
         ],
         "loadBalancingRules": [
           {
+            "name": "lbrule-http",
             "properties": {
-              "frontendIPConfiguration": {
-                "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
-              },
-              "backendAddressPool": {
-                "id": "[concat(variables('LBId'), '/backendAddressPools/lbBackEnd')]"
-              },
-              "probe": {
-                "id": "[concat(variables('LBId'), '/probes/lbProbe-http')]"
-              },
               "protocol": "Tcp",
               "frontendPort": 80,
               "backendPort": 80,
-              "idleTimeoutInMinutes": 15
-            },
-            "name": "lbrule-http"
-          },
-          {
-            "properties": {
+              "idleTimeoutInMinutes": 15,
+              "probe": {
+                "id": "[concat(variables('LBId'), '/probes/lbProbe-http')]"
+              },
               "frontendIPConfiguration": {
                 "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
               },
               "backendAddressPool": {
                 "id": "[concat(variables('LBId'), '/backendAddressPools/lbBackEnd')]"
-              },
-              "probe": {
-                "id": "[concat(variables('LBId'), '/probes/lbProbe-https')]"
-              },
+              }
+            }
+          },
+          {
+            "name": "lbrule-https",
+            "properties": {
               "protocol": "Tcp",
               "frontendPort": 443,
               "backendPort": 443,
-              "idleTimeoutInMinutes": 15
-            },
-            "name": "lbrule-https"
+              "idleTimeoutInMinutes": 15,
+              "probe": {
+                "id": "[concat(variables('LBId'), '/probes/lbProbe-https')]"
+              },
+              "frontendIPConfiguration": {
+                "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
+              },
+              "backendAddressPool": {
+                "id": "[concat(variables('LBId'), '/backendAddressPools/lbBackEnd')]"
+              }
+            }
           }
         ],
         "probes": [
           {
+            "name": "lbProbe-http",
             "properties": {
               "protocol": "Tcp",
               "port": 80,
               "intervalInSeconds": 15,
               "numberOfProbes": 2
-            },
-            "name": "lbProbe-http"
+            }
           },
           {
+            "name": "lbProbe-https",
             "properties": {
               "protocol": "Tcp",
               "port": 443,
               "intervalInSeconds": 15,
               "numberOfProbes": 2
-            },
-            "name": "lbProbe-https"
+            }
           }
         ]
       }
