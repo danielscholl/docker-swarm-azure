@@ -25,8 +25,7 @@
       "metadata": {
         "description": "Number of VMs to deploy, limit 5 since this sample is using a single storage account"
       },
-      "defaultValue": 2,
-      "minValue": 2
+      "defaultValue": 2
     },
     "vmName": {
       "type": "string",
@@ -35,6 +34,12 @@
       },
       "defaultValue": "vm",
       "minLength": 1
+    },
+    "asName": {
+      "type": "string",
+      "metadata": {
+        "description": "AvailabilitySet Name."
+      }
     },
     "vmSize": {
       "type": "string",
@@ -72,7 +77,7 @@
     }
   },
   "variables": {
-    "AvailabilitySetName": "[concat(parameters('vmName'), '-as')]",
+    "AvailabilitySetName": "[concat(parameters('asName'), parameters('vmName'), '-as')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
     "cleanResourceGroup": "[toLower(replace(resourceGroup().name,'-', ''))]",
     "trimmedName": "[substring(variables('cleanResourceGroup'),0, 5)]",

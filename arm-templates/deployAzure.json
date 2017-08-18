@@ -163,15 +163,12 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(uri(deployment().properties.templateLink.uri, 'nested/deployLoadBalancer.json'), parameters('sasToken'))]",
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/docker-swarm-azure/master/arm-templates/nested/', 'deployLoadBalancer.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
           "unique": {
             "value": "[parameters('unique')]"
-          },
-          "subnetId": {
-            "value": "[reference('TemplateVNet').outputs.subnets.value.subnet1Id]"
           }
         }
       }
@@ -198,6 +195,9 @@
           },
           "vmName": {
             "value": "[parameters('serverNamePrefix')]"
+          },
+          "asName": {
+            "value": "manager"
           },
           "vmSize": {
             "value": "[parameters('serverSize')]"
