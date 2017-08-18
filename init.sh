@@ -3,7 +3,7 @@
 #
 #  Purpose: Initialize an Azure Virtual Machine for Ansible Play
 #  Usage:
-#    init.sh <unique> <server_count>
+#    init.sh <unique> <manager_count> <worker_count>
 
 
 ###############################
@@ -26,9 +26,14 @@ if [ -z ${AZURE_LOCATION} ]; then
   exit 1;
 fi
 
-if [ ! -z $2 ]; then COUNT=$2; fi
-if [ -z $COUNT ]; then
-  COUNT=1
+if [ ! -z $2 ]; then MANAGER_COUNT=$2; fi
+if [ -z $MANAGER_COUNT ]; then
+  MANAGER_COUNT=1
+fi
+
+if [ ! -z $2 ]; then WORKER_COUNT=$3; fi
+if [ -z $WORKER_COUNT ]; then
+  WORKER_COUNT=0
 fi
 
 ###############################
@@ -54,37 +59,37 @@ az group deployment create \
   --resource-group ${RESOURCE_GROUP} \
   --template-file arm-templates/deployAzure.json \
   --parameters @arm-templates/deployAzure.params.json \
-  --parameters unique=${UNIQUE} serverCount=${COUNT} \
+  --parameters unique=${UNIQUE} \
   -ojsonc
 
-tput setaf 2; echo "Creating the $CONTAINER blob container..." ; tput sgr0
-STORAGE_ACCOUNT=$(GetStorageAccount $RESOURCE_GROUP)
-CONNECTION=$(GetStorageConnection $RESOURCE_GROUP $STORAGE_ACCOUNT)
-CreateBlobContainer $CONTAINER $CONNECTION
+# tput setaf 2; echo "Creating the $CONTAINER blob container..." ; tput sgr0
+# STORAGE_ACCOUNT=$(GetStorageAccount $RESOURCE_GROUP)
+# CONNECTION=$(GetStorageConnection $RESOURCE_GROUP $STORAGE_ACCOUNT)
+# CreateBlobContainer $CONTAINER $CONNECTION
 
 ##############################
 ## Create Ansible Inventory ##
 ##############################
-INVENTORY="./ansible/inventories/azure/"
-mkdir -p ${INVENTORY};
+# INVENTORY="./ansible/inventories/azure/"
+# mkdir -p ${INVENTORY};
 
 
-tput setaf 2; echo "Retrieving IP Address ..." ; tput sgr0
+# tput setaf 2; echo "Retrieving IP Address ..." ; tput sgr0
 
-IP=$(az vm list-ip-addresses \
-    --resource-group ${RESOURCE_GROUP}  \
-    --query [].virtualMachine.network.publicIpAddresses[].ipAddress -otsv)
-echo ${IP}
-tput setaf 2; echo 'Creating the ansible inventory files...' ; tput sgr0
-cat > ${INVENTORY}/hosts << EOF
-[all]
-$(az network public-ip list --resource-group ${RESOURCE_GROUP} --query [].ipAddress -otsv)
-EOF
+# IP=$(az vm list-ip-addresses \
+#     --resource-group ${RESOURCE_GROUP}  \
+#     --query [].virtualMachine.network.publicIpAddresses[].ipAddress -otsv)
+# echo ${IP}
+# tput setaf 2; echo 'Creating the ansible inventory files...' ; tput sgr0
+# cat > ${INVENTORY}/hosts << EOF
+# [all]
+# $(az network public-ip list --resource-group ${RESOURCE_GROUP} --query [].ipAddress -otsv)
+# EOF
 
-tput setaf 2; echo 'Creating the ansible config file...' ; tput sgr0
-cat > ansible.cfg << EOF1
-[defaults]
-inventory = ${INVENTORY}/hosts
-private_key_file = .ssh/id_rsa
-host_key_checking = false
-EOF1
+# tput setaf 2; echo 'Creating the ansible config file...' ; tput sgr0
+# cat > ansible.cfg << EOF1
+# [defaults]
+# inventory = ${INVENTORY}/hosts
+# private_key_file = .ssh/id_rsa
+# host_key_checking = false
+# EOF1
