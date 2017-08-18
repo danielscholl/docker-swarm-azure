@@ -88,7 +88,24 @@
   "variables": {},
   "resources": [
     {
-      "name": "TemplateStorage",
+      "name": "StorageManager",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/docker-swarm-azure/master/arm-templates/nested/', 'deployStorageAccount.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "storageAccountType": {
+            "value": "[parameters('storageAccountType')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "StorageWorker",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "properties": {
@@ -174,7 +191,7 @@
       }
     },
     {
-      "name": "TemplateVirtualMachineAS",
+      "name": "VirtualMachineManager",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "properties": {
@@ -188,16 +205,67 @@
             "value": "[reference('TemplateVNet').outputs.subnets.value.subnet1Id]"
           },
           "storageAccount": {
-            "value": "[reference('TemplateStorage').outputs.storageAccount.value.name]"
+            "value": "[reference('StorageManager').outputs.storageAccount.value.name]"
           },
           "storageKey": {
-            "value": "[reference('TemplateStorage').outputs.storageAccount.value.key]"
-          },
-          "vmName": {
-            "value": "[parameters('serverNamePrefix')]"
+            "value": "[reference('StorageManager').outputs.storageAccount.value.key]"
           },
           "asName": {
-            "value": "manager"
+            "value": "manager-"
+          },
+          "vmName": {
+            "value": "mVM"
+          },
+          "vmSize": {
+            "value": "[parameters('serverSize')]"
+          },
+          "numberOfInstances": {
+            "value": "[parameters('serverCount')]"
+          },
+          "adminUserName": {
+            "reference": {
+              "keyVault": {
+                "id": "[reference('TemplateKeyVault').outputs.keyVault.value.id]"
+              },
+              "secretName": "adminUserName"
+            }
+          },
+          "sshKeyData": {
+            "reference": {
+              "keyVault": {
+                "id": "[reference('TemplateKeyVault').outputs.keyVault.value.id]"
+              },
+              "secretName": "sshPublicKey"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "VirtualMachineWorker",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/docker-swarm-azure/master/arm-templates/nested/', 'deployVirtualMachineAS.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "subnetId": {
+            "value": "[reference('TemplateVNet').outputs.subnets.value.subnet1Id]"
+          },
+          "storageAccount": {
+            "value": "[reference('StorageWorker').outputs.storageAccount.value.name]"
+          },
+          "storageKey": {
+            "value": "[reference('StorageWorker').outputs.storageAccount.value.key]"
+          },
+          "asName": {
+            "value": "worker-"
+          },
+          "vmName": {
+            "value": "wVM"
           },
           "vmSize": {
             "value": "[parameters('serverSize')]"
