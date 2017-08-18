@@ -35,12 +35,6 @@
       "defaultValue": "vm",
       "minLength": 1
     },
-    "asName": {
-      "type": "string",
-      "metadata": {
-        "description": "AvailabilitySet Name."
-      }
-    },
     "vmSize": {
       "type": "string",
       "metadata": {
@@ -77,7 +71,7 @@
     }
   },
   "variables": {
-    "AvailabilitySetName": "[concat(parameters('asName'), '-as')]",
+    "AvailabilitySetName": "[concat(parameters('vmName'), '-as')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
     "cleanResourceGroup": "[toLower(replace(resourceGroup().name,'-', ''))]",
     "trimmedName": "[substring(variables('cleanResourceGroup'),0, 5)]",
@@ -92,8 +86,8 @@
       "apiVersion": "2016-04-30-preview",
       "location": "[resourceGroup().location]",
       "properties": {
-        "platformUpdateDomainCount": 10,
-        "platformFaultDomainCount": 5,
+        "platformUpdateDomainCount": 7,
+        "platformFaultDomainCount": 3,
         "managed": false
       }
     },

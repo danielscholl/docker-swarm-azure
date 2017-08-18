@@ -103,7 +103,7 @@
           }
         }
       }
-    }
+    },
     {
       "name": "TemplateKeyVault",
       "type": "Microsoft.Resources/deployments",
@@ -192,9 +192,6 @@
           },
           "storageKey": {
             "value": "[reference('TemplateStorage').outputs.storageAccount.value.key]"
-          },
-          "asName": {
-            "value": "vm"
           },
           "vmName": {
             "value": "vm"
