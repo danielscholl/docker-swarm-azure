@@ -32,14 +32,8 @@
       "metadata": {
         "description": "Virtual Machine 1 Server Name."
       },
-      "defaultValue": "vm",
+      "defaultValue": "db",
       "minLength": 1
-    },
-    "asName": {
-      "type": "string",
-      "metadata": {
-        "description": "Availability Set Name."
-      }
     },
     "vmSize": {
       "type": "string",
@@ -77,11 +71,12 @@
     }
   },
   "variables": {
-    "AvailabilitySetName": "[concat(parameters('asName'), '-as')]",
+    "AvailabilitySetName": "[concat(parameters('vmName'), '-as')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
     "cleanResourceGroup": "[toLower(replace(resourceGroup().name,'-', ''))]",
     "trimmedName": "[substring(variables('cleanResourceGroup'),0, 5)]",
     "storageAccountName": "[concat(variables('trimmedName'), uniqueString(resourceGroup().id))]",
+    "storageId": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
     "vmStorageAccountContainerName": "vhds"
   },
   "resources": [
