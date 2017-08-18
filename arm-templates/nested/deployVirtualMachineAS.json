@@ -77,7 +77,6 @@
     "cleanResourceGroup": "[toLower(replace(resourceGroup().name,'-', ''))]",
     "trimmedName": "[substring(variables('cleanResourceGroup'),0, 5)]",
     "storageAccountName": "[concat(variables('trimmedName'), uniqueString(resourceGroup().id))]",
-    "storageId": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
     "vmStorageAccountContainerName": "vhds"
   },
   "resources": [

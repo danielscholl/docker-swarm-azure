@@ -157,6 +157,26 @@
       }
     },
     {
+      "name": "TemplateLoadBalancer",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(uri(deployment().properties.templateLink.uri, 'nested/deployLoadBalancer.json'), parameters('sasToken'))]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "unique": {
+            "value": "[parameters('unique')]"
+          },
+          "subnetId": {
+            "value": "[reference('TemplateVNet').outputs.subnets.value.subnet1Id]"
+          }
+        }
+      }
+    },
+    {
       "name": "TemplateVirtualMachineAS",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
