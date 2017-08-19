@@ -186,7 +186,8 @@
         "count": "[parameters('numberOfInstances')]"
       },
       "dependsOn": [
-        "ipLoop"
+        "ipLoop",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('vmName'), '-nsg'))]"
       ],
       "properties": {
         "ipConfigurations": [
