@@ -172,3 +172,133 @@ function CreateVirtualMachine() {
       tput setaf 3;  echo "Virtual Machine $1 already exists."; tput sgr0
     fi
 }
+function GetLoadBalancer() {
+  # Required Argument $1 = RESOURCE_GROUP
+  # Required Argument $2 = LB_NAME
+
+  if [ -z $1 ]; then
+    tput setaf 1; echo 'ERROR: Argument $1 (RESOURCE_GROUP) not received'; tput sgr0
+    exit 1;
+  fi
+
+  local _result=$(az network lb list\
+    --resource-group $1 \
+    --query [].name \
+    --output tsv)
+
+  echo $_result
+}
+function CreateLoadBalancerRule() {
+  # Required Argument $1 = NAME
+  # Required Argument $2 = PORT_SOURCE
+  # Required Argument $3 = PORT_DEST
+
+  if [ -z $1 ]; then
+    tput setaf 1; echo 'ERROR: Argument $1 (RULE_NAME) not received'; tput sgr0
+    exit 1;
+  fi
+  if [ -z $2 ]; then
+    tput setaf 1; echo 'ERROR: Argument $2 (PORT_SOURCE) not received'; tput sgr0
+    exit 1;
+  fi
+  if [ -z $3 ]; then
+    tput setaf 1; echo 'ERROR: Argument $3 (PORT_DEST) not received'; tput sgr0
+    exit 1;
+  fi
+
+  LB_NAME=$(GetLoadBalancer $RESOURCE_GROUP)
+  PROBE_NAME=probe-$1
+  RULE_NAME=rule-$1
+  PORT_SOURCE=$2
+  PORT_DEST=$3
+
+  local _probe=$(az network lb probe show \
+    --resource-group $RESOURCE_GROUP \
+    --lb-name $LB_NAME \
+    --name $PROBE_NAME \
+    -ojsonc)
+
+  if [ "$_probe"  == "" ]
+    then
+      az network lb probe create \
+        --resource-group $RESOURCE_GROUP \
+        --lb-name $LB_NAME \
+        --name $PROBE_NAME \
+        --protocol tcp \
+        --port $PORT_DEST \
+        -ojsonc
+    else
+      tput setaf 3;  echo "Skipping Create Probe $1. Already exists."; tput sgr0
+    fi
+
+  local _rule=$(az network lb rule show \
+    --resource-group $RESOURCE_GROUP \
+    --lb-name $LB_NAME \
+    --name $RULE_NAME \
+    -ojsonc)
+
+  if [ "$_rule"  == "" ]
+    then
+      az network lb rule create \
+        --resource-group $RESOURCE_GROUP \
+        --lb-name $LB_NAME \
+        --name $RULE_NAME \
+        --probe-name $PROBE_NAME \
+        --protocol tcp \
+        --frontend-port $PORT_SOURCE \
+        --backend-port $PORT_DEST \
+        --frontend-ip-name lbFrontEnd \
+        --backend-pool-name lbBackEnd \
+        -ojsonc
+    else
+      tput setaf 3;  echo "Skipping Create Rule $1. Already exists."; tput sgr0
+    fi
+}
+function RemoveLoadBalancerRule() {
+  # Required Argument $1 = NAME
+  # Required Argument $2 = PORT_SOURCE
+  # Required Argument $3 = PORT_DEST
+
+  if [ -z $1 ]; then
+    tput setaf 1; echo 'ERROR: Argument $1 (RULE_NAME) not received'; tput sgr0
+    exit 1;
+  fi
+
+  LB_NAME=$(GetLoadBalancer $RESOURCE_GROUP)
+  PROBE_NAME=probe-$1
+  RULE_NAME=rule-$1
+
+  local _rule=$(az network lb rule show \
+    --resource-group $RESOURCE_GROUP \
+    --lb-name $LB_NAME \
+    --name $RULE_NAME \
+    --query name \
+    -ojsonc)
+
+  if [ "$_rule"  != "" ]
+    then
+      tput setaf 3;  echo "Delete Rule: $RULE_NAME"; tput sgr0
+      az network lb rule delete \
+        --resource-group $RESOURCE_GROUP \
+        --lb-name $LB_NAME \
+        --name $RULE_NAME \
+        -ojsonc
+    fi
+
+  local _probe=$(az network lb probe show \
+    --resource-group $RESOURCE_GROUP \
+    --lb-name $LB_NAME \
+    --name $PROBE_NAME \
+    --query name \
+    -ojsonc)
+
+  if [ "$_probe"  != "" ]
+    then
+      tput setaf 3;  echo "Delete Probe: $PROBE_NAME"; tput sgr0
+      az network lb probe delete \
+        --resource-group $RESOURCE_GROUP \
+        --lb-name $LB_NAME \
+        --name $PROBE_NAME \
+        -ojsonc
+    fi
+}
