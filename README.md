@@ -110,8 +110,6 @@ __Value:__ ansible_python_interpreter: "/usr/local/bin/python"
 
 The first step is to deploy the custom ARM Templates using the init.sh script.  The script has two required arguments.
 
-__Usage:__ ./init.sh <unique> <count>
-
 - unique (A small unique string necessary for DNS uniqueness in Azure)
 - count (The number of Nodes desired to be created  ie: 3)
 
@@ -125,7 +123,7 @@ __Usage:__ ./init.sh <unique> <count>
 Once the template is deployed properly a few Azure CLI commands are run to create the items not supported by ARM Templates.
 
 1. A Storage Container is created for the REX-ray driver to use.
-2.  A Service Principle is created with a clientID and clientSecret for the REX-ray driver to use to access AZURE.
+2. A Service Principle is created with a clientID and clientSecret for the REX-ray driver to use to access AZURE.
 
 Three files are automatically created to support the ansible installation process with the proper values.
 
