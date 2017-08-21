@@ -29,6 +29,7 @@ mkdir .ssh && cd .ssh
 ssh-keygen -t rsa -b 2048 -C "azureuser@email.com" -f id_rsa
 ```
 
+
 ### Create the Environment File
 
 The solution reads environment variables and sources either ~/.azure/.env or {pwd}/.env to retrieve required settings.
@@ -36,6 +37,7 @@ Copy the .env_sample to .env and edit to set the required environment variables
 
 - AZURE_SUBSCRIPTION  (Azure Subscription ID)
 - AZURE_LOCATION  (Default Region Location ie: southcentralus)
+
 
 ### Create the template deploy parameter file
 
@@ -55,11 +57,13 @@ Copy the deployAzure.params_sample.json file to deployAzure.params.json located 
 - servicePrincipalAppId  (Object ID of your user to be used for access to KeyVaults)
   - Command: az ad user show --upn user@email.com
 
+
 ### OS Specific Modifications
 
 This solution requires python on the localhost and the location needs to be specified.
 File: playbooks/roles/reboot-server/tasks/main.yml
 Default: ansible_python_interpreter: "/usr/local/bin/python"
+
 
 ### Provision IaaS using ARM Template scripts
 
@@ -72,31 +76,31 @@ The first step is to deploy the custom ARM Templates using the init.sh script.  
 ./init.sh abc 3
 ```
 
+
 ### Configure the IaaS servers using Ansible Playbooks
 
-Once the template is deployed properly an ansible configuration file and inventories file is created to allow for ansible provisioning. To properly deploy the REX-ray role variables are necessary to be located in the ./ansible/inventories/azure/group_vars/all file which will allow communication by REX-ray to the Azure Storage Account `REXray` container for persistent volumes.
+Once the template is deployed properly a few Azure CLI commands are run to create the items not supported by ARM Templates.
+
+- A Storage Container is created for the REX-ray driver to use.
+- A Service Principle is created with a clientID and clientSecret for the REX-ray driver to use to access AZURE.
+
+Three files are automatically created to support the ansible installation process with the proper values.
+
+#### Ansible Configuration File 
+
+This is the default ansible configuration file that is used by the provisioning process it identifies the location of the ssh keys and where the inventory file is located at.
 
 ```yaml
-# The global variable file rexray installation
-
-# az account show --query id -otsv
-azure_subscriptionid: '<your_subscription_id>'
-
-#az account show --query tenantId -otsv
-azure_tenantid: '<your_tenentId>'
-
-#Assume you have an app with a service principle created.
-#az ad app list --query "[?displayName=='Rex-Ray']".appId -otsv
-azure_clientid: '<your_app_principle_id>'
-
-#Obtain from portal
-azure_clientsecret: '<your_app_principle_key>'
-
-#Obtain from portal
-azure_storageaccount: '<your_storage_account_name>'
-azure_storageaccesskey: '<your_storage_account_key>'
-azure_container: 'rexray'
+[defaults]
+inventory = ./ansible/inventories/azure//hosts
+private_key_file = .ssh/id_rsa
+host_key_checking = false
 ```
+
+#### Ansible Hosts File
+
+- ansible/inventories/hosts  (IP Address list of all the Azure Swarm Servers)
+- ansible/inventories/azure/group_vars/all  (Global Variable file with custom rexray settings)
 
 An azure host inventory file (./ansible/inventories/azure/hosts) is automatically created but ansible groups must be specified for which nodes are desired to be managers or workers as shown below in sample hosts file.
 
@@ -120,6 +124,27 @@ e.e.e.e
 f.f.f.f
 ```
 
+#### Ansible Group Variable file.
+
+To properly deploy the REX-ray role variables are necessary to be located in the ./ansible/inventories/azure/group_vars/all file which will allow communication by REX-ray to the Azure Storage Account `REXray` container for persistent volumes. 
+
+```yaml
+# The global variable file rexray installation
+
+azure_subscriptionid: <your_subscription_id>
+azure_tenantid: <your_tenant_id>
+azure_resourcegroup: <your_resource_group>
+
+azure_clientid: <your_app_serviceprinciple_id>
+azure_clientsecret: <your_app_serviceprinciple_secret>
+
+azure_storageaccount: <your_azure_storage_account>
+azure_storageaccesskey: <your_azure_storage_key>
+azure_container: <your_azure_container>
+```
+
+### Validate Connectivity
+
 Check and validate ansible connectivity once provisioning has been completed and begin to configure the node servers.
 
 ```bash
@@ -134,6 +159,10 @@ ansible-playbook ansible/playbooks/main.yml  # Provision the node Servers
 - clean.sh <unique> <count> (delete IaaS from azure)
 - connect.sh <unique> <node> (SSH Connect to the node instance)
 - manage.sh <unique> <command> (deprovision/start/stop nodes in azure)
+- lb.sh <unique> (manage loadbalancer ports to the swarm)
+  - lb.sh <unique> ls  (list all lb rules)
+  - lb.sh <unique> add <name> <portSrc:portDest>  (ie: add http 80:8080 --> Open port 80 map to 8080 on swarm and name it http)
+  - lb.sh <unique> rm <name> (remove lb rule)
 
 ## REX-Ray
 Consult the full REX-Ray documentation [here](http://rexray.readthedocs.org/en/stable/).

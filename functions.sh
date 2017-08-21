@@ -86,7 +86,7 @@ function CreateBlobContainer() {
 
  az storage container create --name $1 \
     --connection-string $2 \
-    -ojsonc 1>&2;
+    -ojsonc
 }
 function CreateSASToken() {
   # Required Argument $1 CONTAINER_NAME
@@ -108,6 +108,40 @@ function CreateSASToken() {
   --connection-string $2 \
   --output tsv)
   echo ${_token}
+}
+function CreateAdServicePrincipal() {
+  # Required Argument $1 = RESOURCE_GROUP
+
+  if [ -z $1 ]; then
+    tput setaf 1; echo 'ERROR: Argument $1 (ResourceGroup) not received' ; tput sgr0
+    exit 1;
+  fi
+
+  KV=$(az keyvault list --resource-group $1 --query [].name -otsv)
+
+  local _result=$(az ad sp list --query "[?displayName=='$1']".appId -otsv)
+  if [ "$_result"  == "" ]
+    then
+      PRINCIPAL=$(az ad sp create-for-rbac \
+        --name $1 \
+        --role "Contributor" \
+        --query "[appId, password]" \
+        -otsv)
+
+      SECRET=$(az keyvault secret set \
+        --vault-name ${KV} \
+        --name clientSecret \
+        --value $(echo $PRINCIPAL |awk '{print $2'}))
+
+      echo ${PRINCIPAL}
+    else
+      SECRET=$(az keyvault secret show \
+        --vault-name ${KV} \
+        --name clientSecret \
+        --query value \
+        -otsv)
+       echo $_result $SECRET
+    fi
 }
 function GetUrl() {
   # Required Argument $1 = BLOB_NAME

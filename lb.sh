@@ -59,6 +59,7 @@ ls)
   az network lb rule list \
       --resource-group $RESOURCE_GROUP \
       --lb-name $LB_NAME \
+      --query '[].{name:name, "LB Port":frontendPort, "Swarm Port":backendPort, protocol:protocol}' \
       -otable
   ;;
 *)

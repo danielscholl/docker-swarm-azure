@@ -49,7 +49,7 @@ tput setaf 2; echo "Creating the $RESOURCE_GROUP resource group..." ; tput sgr0
 CreateResourceGroup ${RESOURCE_GROUP} ${AZURE_LOCATION};
 az group show --name ${RESOURCE_GROUP} -ojsonc
 
-# tput setaf 2; echo "Deploying Template..." ; tput sgr0
+tput setaf 2; echo "Deploying Template..." ; tput sgr0
 az group deployment create \
   --resource-group ${RESOURCE_GROUP} \
   --template-file arm-templates/deployAzure.json \
@@ -62,25 +62,48 @@ STORAGE_ACCOUNT=$(GetStorageAccount $RESOURCE_GROUP)
 CONNECTION=$(GetStorageConnection $RESOURCE_GROUP $STORAGE_ACCOUNT)
 CreateBlobContainer $CONTAINER $CONNECTION
 
+tput setaf 2; echo "Creating the REX-ray Service Principal..." ; tput sgr0
+PRINCIPAL=$(CreateAdServicePrincipal ${RESOURCE_GROUP})
+
 ##############################
 ## Create Ansible Inventory ##
 ##############################
 INVENTORY="./ansible/inventories/azure/"
+GLOBAL_VARS="./ansible/inventories/azure/group_vars"
 mkdir -p ${INVENTORY};
+mkdir -p ${GLOBAL_VARS}
+
+tput setaf 2; echo "Retrieving Ansible Required Information ..." ; tput sgr0
+
+TENANT=$(az account show \
+  --subscription ${AZURE_SUBSCRIPTION} \
+  --query tenantId \
+  -otsv)
+
+STORAGE_KEY=$(az storage account keys list \
+  --account-name ${STORAGE_ACCOUNT} \
+  --resource-group ${RESOURCE_GROUP} \
+  --query '[0].value' \
+  -otsv)
+
+STORAGE_CONTAINER=$(az storage container list \
+  --account-name ${STORAGE_ACCOUNT} \
+  --account-key ${STORAGE_KEY} \
+  --query "[?name!='vhds'].name" \
+  -otsv)
 
 
-tput setaf 2; echo "Retrieving IP Address ..." ; tput sgr0
-
-IP=$(az vm list-ip-addresses \
-    --resource-group ${RESOURCE_GROUP}  \
-    --query [].virtualMachine.network.publicIpAddresses[].ipAddress -otsv)
-echo ${IP}
+# Ansible Inventory
 tput setaf 2; echo 'Creating the ansible inventory files...' ; tput sgr0
 cat > ${INVENTORY}/hosts << EOF
-[all]
-$(az network public-ip list --resource-group ${RESOURCE_GROUP} --query [].ipAddress -otsv)
+$(az network public-ip list --resource-group ${RESOURCE_GROUP} --query "[?contains(name,'vm')].ipAddress" -otsv)
+
+[manager]
+
+[worker]
 EOF
 
+# Ansible Config
 tput setaf 2; echo 'Creating the ansible config file...' ; tput sgr0
 cat > ansible.cfg << EOF1
 [defaults]
@@ -88,3 +111,20 @@ inventory = ${INVENTORY}/hosts
 private_key_file = .ssh/id_rsa
 host_key_checking = false
 EOF1
+
+# Ansible Global VARS
+tput setaf 2; echo 'Creating the global vars file...' ; tput sgr0
+cat > ${GLOBAL_VARS}/all << EOF2
+# The global variable file rexray installation
+
+azure_subscriptionid: ${AZURE_SUBSCRIPTION}
+azure_tenantid: ${TENANT}
+azure_resourcegroup: ${RESOURCE_GROUP}
+
+azure_clientid: $(echo $PRINCIPAL |awk '{print $1'})
+azure_clientsecret: $(echo $PRINCIPAL |awk '{print $2'})
+
+azure_storageaccount: ${STORAGE_ACCOUNT}
+azure_storageaccesskey: ${STORAGE_KEY}
+azure_container: ${STORAGE_CONTAINER}
+EOF2
