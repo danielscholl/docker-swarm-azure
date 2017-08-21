@@ -12,7 +12,7 @@
   "variables": {
     "LBName": "[concat(parameters('unique'), '-lb')]",
     "LBId": "[resourceId('Microsoft.Network/loadBalancers', variables('LBName'))]",
-    "PublicIpName": "[concat(variables('LBName'), '-ip')]",
+    "PublicIpName": "[concat('lb-ip')]",
     "PublicIpId": "[resourceId('Microsoft.Network/publicIPAddresses',variables('PublicIpName'))]"
   },
   "resources": [
