@@ -34,10 +34,9 @@ ssh-keygen -t rsa -b 2048 -C "azureuser@email.com" -f id_rsa
 ### Create the Environment File
 
 The solution reads environment variables and sources either ~/.azure/.env or {pwd}/.env to retrieve required settings.
+
 Copy the .env_sample to .env and edit to set the required environment variables
 
-- AZURE_SUBSCRIPTION  (Azure Subscription ID)
-- AZURE_LOCATION  (Default Region Location ie: southcentralus)
 
 ```bash
 export AZURE_SUBSCRIPTION=<your_subscription_id>
@@ -51,16 +50,16 @@ Copy the deployAzure.params_sample.json file to deployAzure.params.json located 
 4 parameter values are required in order to begin.
 
 - adminUser (Logged in User of your local machine)
-  - Command: whoami
+  - __Command:__ `whoami`
 
 - adminSSHKey (Public SSH key of your local machine user)
-  - Command:  cat ~/.ssh/id_rsa.pub
+  - __Command:__  `cat ~/.ssh/id_rsa.pub`
 
 - remoteAccessACL: (Public IP Address of your local machine to be used to grant firewall ssh access)
-  - Command: curl ifconfig.co
+  - __Command:__ `curl ifconfig.co`
 
 - servicePrincipalAppId  (Object ID of your user to be used for access to KeyVaults)
-  - Command: az ad user show --upn user@email.com
+  - __Command:__ `az ad user show --upn user@email.com`
 
 ```json
 {
@@ -100,14 +99,17 @@ Copy the deployAzure.params_sample.json file to deployAzure.params.json located 
 
 ### OS Specific Modifications
 
-This solution requires python on the localhost and the location needs to be specified.
-File: playbooks/roles/reboot-server/tasks/main.yml
-Default: ansible_python_interpreter: "/usr/local/bin/python"
+This solution requires python on the localhost and the location is specified currently in the playbook.  If your python is located in an alternate location you will have to modify the playbook.
+
+__File:__ playbooks/roles/reboot-server/tasks/main.yml
+__Value:__ ansible_python_interpreter: "/usr/local/bin/python"
 
 
 ### Provision IaaS using ARM Template scripts
 
 The first step is to deploy the custom ARM Templates using the init.sh script.  The script has two required arguments.
+
+__Usage:__ ./init.sh <unique> <count>
 
 - unique (A small unique string necessary for DNS uniqueness in Azure)
 - count (The number of Nodes desired to be created  ie: 3)
@@ -121,8 +123,8 @@ The first step is to deploy the custom ARM Templates using the init.sh script.  
 
 Once the template is deployed properly a few Azure CLI commands are run to create the items not supported by ARM Templates.
 
-- A Storage Container is created for the REX-ray driver to use.
-- A Service Principle is created with a clientID and clientSecret for the REX-ray driver to use to access AZURE.
+1. A Storage Container is created for the REX-ray driver to use.
+2.  A Service Principle is created with a clientID and clientSecret for the REX-ray driver to use to access AZURE.
 
 Three files are automatically created to support the ansible installation process with the proper values.
 
@@ -164,7 +166,7 @@ e.e.e.e
 f.f.f.f
 ```
 
-#### Ansible Group Variable file.
+#### Ansible Group Variable File.
 
 To properly deploy the REX-ray role variables are necessary to be located in the ./ansible/inventories/azure/group_vars/all file which will allow communication by REX-ray to the Azure Storage Account `REXray` container for persistent volumes. 
 
