@@ -189,21 +189,21 @@ azure_container: <your_azure_container>
 Check and validate ansible connectivity once provisioning has been completed and begin to configure the node servers.
 
 ```bash
-ansible-all -m ping  #Check Connectivity
+ansible all -m ping  #Check Connectivity
 ansible-playbook ansible/playbooks/main.yml  # Provision the node Servers
 
 ```
 
 ## Script Usage
 
-- init.sh <unique> <count> (provision IaaS into azure)
-- clean.sh <unique> <count> (delete IaaS from azure)
-- connect.sh <unique> <node> (SSH Connect to the node instance)
-- manage.sh <unique> <command> (deprovision/start/stop nodes in azure)
-- lb.sh <unique> (manage loadbalancer ports to the swarm)
-  - lb.sh <unique> ls  (list all lb rules)
-  - lb.sh <unique> add <name> <portSrc:portDest>  (ie: add http 80:8080 --> Open port 80 map to 8080 on swarm and name it http)
-  - lb.sh <unique> rm <name> (remove lb rule)
+- init.sh _unique_ _count_ (provision IaaS into azure)
+- clean.sh _unique_ _count_ (delete IaaS from azure)
+- connect.sh _unique_ _node_ (SSH Connect to the node instance)
+- manage.sh _unique_ _command_ (deprovision/start/stop nodes in azure)
+- lb.sh _unique_ (manage loadbalancer ports to the swarm)
+  - lb.sh _unique_ ls  (list all lb rules)
+  - lb.sh _unique_ add _name_ _portSrc:portDest_  (ie: add http 80:8080 --> Open port 80 map to 8080 on swarm and name it http)
+  - lb.sh _unique_ rm _name_ (remove lb rule)
 
 ## REX-Ray
 Consult the full REX-Ray documentation [here](http://rexray.readthedocs.org/en/stable/).
