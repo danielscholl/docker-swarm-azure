@@ -4,7 +4,8 @@ This is an Azure environment created using ARM templates with REX-Ray `Virtual M
 as a persistent volume store for a docker swarm.  This solution can be used as a quick 
 way to get started and learn how a docker swarm works with _persistant storage_ capability.
 
-_* Purpose for this automation vs ACS was to fully understand each component_
+_* The purpose of this automation solution instead of just using ACS was to implement REX-ray._
+> REX-ray is not compatable with Managed Disk Virtual Machines and has to be classic disks which rules out the use of Scale Sets or ACS solutions which then use Scale Sets.
 
 Requirements
 - Azure Subscription
