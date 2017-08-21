@@ -39,6 +39,10 @@ Copy the .env_sample to .env and edit to set the required environment variables
 - AZURE_SUBSCRIPTION  (Azure Subscription ID)
 - AZURE_LOCATION  (Default Region Location ie: southcentralus)
 
+```bash
+export AZURE_SUBSCRIPTION=<your_subscription_id>
+export AZURE_LOCATION=<region_location>
+```
 
 ### Create the template deploy parameter file
 
@@ -58,6 +62,41 @@ Copy the deployAzure.params_sample.json file to deployAzure.params.json located 
 - servicePrincipalAppId  (Object ID of your user to be used for access to KeyVaults)
   - Command: az ad user show --upn user@email.com
 
+```json
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "servicePrincipalAppId": {
+      "value": "<your_principle_guid>"
+    },
+    "adminUser": {
+      "value": "<whoami>"
+    },
+    "adminSSHKey": {
+      "value": "<your_ssh_key>"
+    },
+    "vnetPrefix": {
+      "value": "10.1.0.0/24"
+    },
+    "subnetPrefix": {
+      "value": "10.1.0.0/25"
+    },
+    "remoteAccessACL": {
+      "value": "<your_host_ip>"
+    },
+    "serverNamePrefix": {
+      "value": "vm"
+    },
+    "serverSize": {
+      "value": "Standard_A1"
+    },
+    "storageAccountType": {
+      "value": "Standard_LRS"
+    }
+  }
+}
+```
 
 ### OS Specific Modifications
 
