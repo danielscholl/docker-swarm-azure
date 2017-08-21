@@ -5,7 +5,7 @@ as a persistent volume store for a docker swarm.  This solution can be used as a
 way to get started and learn how a docker swarm works with _persistant storage_ capability.
 
 _* The purpose of this automation solution instead of just using ACS was to implement REX-ray._
-> REX-ray is not compatable with Managed Disk Virtual Machines and has to be classic disks which rules out the use of Scale Sets or ACS solutions which then use Scale Sets.
+> REX-ray is not compatable with Managed Disk Virtual Machines and has to be classic disks. This eliminates the possiblity of using ACS solutions which use Scale Sets.
 
 Requirements
 - Azure Subscription
