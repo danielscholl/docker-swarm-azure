@@ -7,6 +7,13 @@
       "metadata": {
         "description": "Small unique string."
       }
+    },
+    "numberOfInstances": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of VMs to deploy, limit 5 since this sample is using a single storage account"
+      },
+      "defaultValue": 2
     }
   },
   "variables": {
@@ -116,6 +123,28 @@
             }
           }
         ]
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/loadBalancers/inboundNatRules",
+      "name": "[concat(variables('LBName'), '/', 'ssh-vm', copyIndex())]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "lbNatLoop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/loadBalancers/', variables('LBName'))]"
+      ],
+      "properties": {
+        "frontendIPConfiguration": {
+          "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
+        },
+        "protocol": "tcp",
+        "frontendPort": "[copyIndex(5000)]",
+        "backendPort": 22,
+        "enableFloatingIP": false
       }
     }
   ],

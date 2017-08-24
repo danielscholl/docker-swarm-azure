@@ -8,7 +8,7 @@
 ###############################
 ## ARGUMENT INPUT            ##
 ###############################
-usage() { echo "Usage: lb.sh <unique> <action> <src:dest>" 1>&2; exit 1; }
+usage() { echo "Usage: lb.sh <unique> <action> <name> <src:dest>" 1>&2; exit 1; }
 
 if [ -f ~/.azure/.env ]; then source ~/.azure/.env; fi
 if [ -f ./.env ]; then source ./.env; fi
@@ -44,6 +44,9 @@ add)
 
   echo "Creating LB Rule for" ${RESOURCE_GROUP}
   CreateLoadBalancerRule $NAME $PORT_SOURCE $PORT_DEST
+  IP=$(az network public-ip list --resource-group ${RESOURCE_GROUP} --query "[?contains(name,'lb-ip')].ipAddress" -otsv)
+
+  echo "http://${IP}:${PORT_SOURCE}"
   ;;
 rm)
   if [ -z $NAME ]; then
