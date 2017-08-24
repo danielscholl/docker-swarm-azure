@@ -264,28 +264,6 @@
         "autoUpgradeMinorVersion": true,
         "settings": {}
       }
-    },
-    {
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('vmName'), copyIndex(), '/CustomScript')]",
-      "location": "[resourceGroup().location]",
-      "copy": {
-        "name": "extCustomLoop",
-        "count": "[parameters('numberOfInstances')]"
-      },
-      "apiVersion": "2015-06-15",
-      "dependsOn": [
-        "virtualMachineLoop"
-      ],
-      "properties": {
-        "publisher": "Microsoft.Azure.Extensions",
-        "type": "CustomScript",
-        "typeHandlerVersion": "2.0",
-        "autoUpgradeMinorVersion": true,
-        "settings": {
-          "commandToExecute": "sudo apt-get -y update && sudo apt-get -y install aptitude apt-transport-https ca-certificates software-properties-common curl"
-        }
-      }
     }
   ],
   "outputs": {
