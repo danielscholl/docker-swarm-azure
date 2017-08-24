@@ -130,51 +130,6 @@
       }
     },
     {
-      "comments": "## Network Security Group ##",
-      "name": "[concat(parameters('vmName'), '-nsg')]",
-      "type": "Microsoft.Network/networkSecurityGroups",
-      "apiVersion": "2015-05-01-preview",
-      "location": "[resourceGroup().location]",
-      "tags": {
-        "displayName": "Network Security Group - Subnet"
-      },
-      "properties": {
-        "securityRules": [
-          {
-            "name": "default-allow-ssh",
-            "properties": {
-              "description": "Allow SSH",
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "22",
-              "sourceAddressPrefix": "[parameters('remoteAccessACL')]",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 1000,
-              "direction": "Inbound"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "comments": "## Public IP Address ##",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[concat(parameters('vmName'), copyindex(), '-ip')]",
-      "apiVersion": "2015-06-15",
-      "location": "[resourceGroup().location]",
-      "tags": {
-        "displayName": "Public IP Address"
-      },
-      "copy": {
-        "name": "ipLoop",
-        "count": "[parameters('numberOfInstances')]"
-      },
-      "properties": {
-        "publicIPAllocationMethod": "Dynamic"
-      }
-    },
-    {
       "comments": "## Network Interface ##",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(parameters('vmName'), copyindex(), '-nic')]",
@@ -186,8 +141,7 @@
         "count": "[parameters('numberOfInstances')]"
       },
       "dependsOn": [
-        "ipLoop",
-        "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('vmName'), '-nsg'))]"
+        "ipLoop"
       ],
       "properties": {
         "ipConfigurations": [
@@ -195,9 +149,6 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName'), copyindex(), '-ip'))]"
-              },
               "subnet": {
                 "id": "[parameters('subnetId')]"
               },
