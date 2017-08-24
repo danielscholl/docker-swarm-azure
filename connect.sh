@@ -31,10 +31,9 @@ fi
 #////////////////////////////////
 CATEGORY=${PWD##*/}
 RESOURCE_GROUP=${UNIQUE}-${CATEGORY}
-echo ${RESOURCE_GROUP}
-echo "Retrieving IP Address for vm${INSTANCE} in " ${RESOURCE_GROUP}
-IP=$(az vm list-ip-addresses -g ${RESOURCE_GROUP} -n vm${INSTANCE} --query [].virtualMachine.network.publicIpAddresses[].ipAddress -o tsv)
 
+echo "Retrieving IP Address for vm${INSTANCE} in " ${RESOURCE_GROUP}
+IP=$(az network public-ip show --resource-group ${RESOURCE_GROUP} --name lb-ip --query ipAddress -otsv)
 echo 'Connecting to' $USER@$IP
 
 SSH_KEY="~/.ssh/id_rsa"
@@ -42,5 +41,5 @@ if [ -f .ssh/id_rsa ]; then
   SSH_KEY=".ssh/id_rsa"
 fi
 
-echo $SSH_KEY
-ssh -i ${SSH_KEY} $USER@$IP -A
+PORT=$((5000 + $INSTANCE))
+ssh -i ${SSH_KEY} $USER@$IP -A -p $PORT

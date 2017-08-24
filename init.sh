@@ -68,6 +68,7 @@ PRINCIPAL=$(CreateAdServicePrincipal ${RESOURCE_GROUP})
 ##############################
 ## Create Ansible Inventory ##
 ##############################
+BASE_PORT=5000
 INVENTORY="./ansible/inventories/azure/"
 GLOBAL_VARS="./ansible/inventories/azure/group_vars"
 mkdir -p ${INVENTORY};
@@ -92,11 +93,16 @@ STORAGE_CONTAINER=$(az storage container list \
   --query "[?name!='vhds'].name" \
   -otsv)
 
+LB_IP=$(az network public-ip show \
+  --resource-group ${RESOURCE_GROUP} \
+  --name lb-ip \
+  --query ipAddress \
+  -otsv)
 
 # Ansible Inventory
 tput setaf 2; echo 'Creating the ansible inventory files...' ; tput sgr0
 cat > ${INVENTORY}/hosts << EOF
-$(az network public-ip list --resource-group ${RESOURCE_GROUP} --query "[?contains(name,'vm')].ipAddress" -otsv)
+$(for (( c=0; c<$COUNT; c++ )); do echo "vm$c ansible_host=$LB_IP ansible_port=$(($BASE_PORT + $c))"; done)
 
 [manager]
 
