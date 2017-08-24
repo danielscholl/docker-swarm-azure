@@ -283,7 +283,7 @@
         "typeHandlerVersion": "2.0",
         "autoUpgradeMinorVersion": true,
         "settings": {
-          "commandToExecute": "apt-get -y update && apt-get -y install aptitude apt-transport-https ca-certificates software-properties-common curl"
+          "commandToExecute": "sudo apt-get -y update && sudo apt-get -y install aptitude apt-transport-https ca-certificates software-properties-common curl"
         }
       }
     }
