@@ -146,6 +146,24 @@
         "backendPort": 22,
         "enableFloatingIP": false
       }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/loadBalancers/inboundNatRules",
+      "name": "[concat(variables('LBName'), '/', 'swarm-manager')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/loadBalancers/', variables('LBName'))]"
+      ],
+      "properties": {
+        "frontendIPConfiguration": {
+          "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
+        },
+        "protocol": "tcp",
+        "frontendPort": "2376",
+        "backendPort": 2376,
+        "enableFloatingIP": false
+      }
     }
   ],
   "outputs": {

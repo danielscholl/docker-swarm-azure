@@ -65,6 +65,20 @@
             }
           },
           {
+            "name": "allow-swarm",
+            "properties": {
+              "description": "Allow Swarm Manager",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "2376",
+              "sourceAddressPrefix": "[parameters('remoteAccessACL')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 1005,
+              "direction": "Inbound"
+            }
+          },
+          {
             "name": "allow-http",
             "properties": {
               "description": "Allow HTTP",
