@@ -202,7 +202,7 @@ ansible-playbook ansible/playbooks/main.yml  # Provision the node Servers
 - manage.sh _unique_ _command_ (deprovision/start/stop nodes in azure)
 - lb.sh _unique_ (manage loadbalancer ports to the swarm)
   - lb.sh _unique_ ls  (list all lb rules)
-  - lb.sh _unique_ add _name_ _portSrc:portDest_  (ie: add http 80:8080 --> Open port 80 map to 8080 on swarm and name it http)
+  - lb.sh _unique_ create _name_ _portSrc:portDest_  (ie: create http 80:8080 --> Open port 80 map to 8080 on swarm and name it http)
   - lb.sh _unique_ rm _name_ (remove lb rule)
 
 ## REX-Ray

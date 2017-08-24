@@ -30,7 +30,7 @@ CATEGORY=${PWD##*/}
 RESOURCE_GROUP=${UNIQUE}-${CATEGORY}
 
 case $ACTION in
-add)
+create)
   if [ -z $NAME ]; then
     tput setaf 1; echo 'ERROR: NAME not found' ; tput sgr0
     usage;

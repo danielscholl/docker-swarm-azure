@@ -245,6 +245,7 @@ function CreateLoadBalancerRule() {
   RULE_NAME=rule-$1
   PORT_SOURCE=$2
   PORT_DEST=$3
+  SECURITY_NAME=allow-$1
 
   local _probe=$(az network lb probe show \
     --resource-group $RESOURCE_GROUP \
@@ -287,6 +288,35 @@ function CreateLoadBalancerRule() {
     else
       tput setaf 3;  echo "Skipping Create Rule $1. Already exists."; tput sgr0
     fi
+
+  local _fw=$(az network nsg rule show \
+    --resource-group ${RESOURCE_GROUP} \
+    --nsg-name subnet-nsg \
+    --name $SECURITY_NAME \
+    -ojsonc)
+
+  local _highest=$(az network nsg rule list --resource-group dks8-docker-swarm-azure --nsg-name subnet-nsg --query [].priority -otsv | sort -nr | head -n1)
+  local _priority=$((_highest + 10))
+  if [ "$_rule"  == "" ]
+    then
+      az network nsg rule create \
+      --resource-group $RESOURCE_GROUP \
+      --nsg-name subnet-nsg \
+      --name $SECURITY_NAME \
+      --direction inbound \
+      --access allow \
+      --protocol tcp \
+      --source-address-prefix '*' \
+      --source-port-range '*' \
+      --destination-address-prefix '*' \
+      --destination-port-range 80 \
+      --priority $_priority
+
+    else
+      tput setaf 3;  echo "Skipping Security Rule $1. Already exists."; tput sgr0
+    fi
+
+
 }
 function RemoveLoadBalancerRule() {
   # Required Argument $1 = NAME
@@ -301,6 +331,7 @@ function RemoveLoadBalancerRule() {
   LB_NAME=$(GetLoadBalancer $RESOURCE_GROUP)
   PROBE_NAME=probe-$1
   RULE_NAME=rule-$1
+  SECURITY_NAME=allow-$1
 
   local _rule=$(az network lb rule show \
     --resource-group $RESOURCE_GROUP \
@@ -333,6 +364,22 @@ function RemoveLoadBalancerRule() {
         --resource-group $RESOURCE_GROUP \
         --lb-name $LB_NAME \
         --name $PROBE_NAME \
+        -ojsonc
+    fi
+
+  local _fw=$(az network nsg rule show \
+    --resource-group ${RESOURCE_GROUP} \
+    --nsg-name ${NSG} \
+    --name $SECURITY_NAME \
+    -ojsonc)
+
+  if [ "$_fw"  != "" ]
+    then
+      tput setaf 3;  echo "Delete Inbound Security Rule: $SECURITY_NAME"; tput sgr0
+      az network nsg rule delete \
+        --resource-group ${RESOURCE_GROUP} \
+        --nsg-name subnet-nsg \
+        --name $SECURITY_NAME \
         -ojsonc
     fi
 }
