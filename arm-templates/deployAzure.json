@@ -193,9 +193,6 @@
           "loadBalancerId": {
             "value": "[reference('TemplateLoadBalancer').outputs.loadBalancer.value.id]"
           },
-          "remoteAccessACL": {
-            "value": "[parameters('remoteAccessACL')]"
-          },
           "storageAccount": {
             "value": "[reference('TemplateStorage').outputs.storageAccount.value.name]"
           },

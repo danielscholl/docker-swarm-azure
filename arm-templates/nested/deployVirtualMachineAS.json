@@ -14,13 +14,6 @@
         "description": "Load Balancer Id to associate VM to."
       }
     },
-    "remoteAccessACL": {
-      "type": "string",
-      "metadata": {
-        "description": "Remote Access CIDR"
-      },
-      "defaultValue": "Internet"
-    },
     "storageAccount": {
       "type": "string",
       "metadata": {
@@ -249,6 +242,40 @@
           "storageAccountName": "2016-04-30-preview",
           "storageAccountKey": "[parameters('storageKey')]",
           "storageAccountEndPoint": "https://core.windows.net"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('vmName'), copyIndex(), '/DockerExtension')]",
+      "apiVersion": "2016-04-30-preview",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "virtualMachineLoop"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "DockerExtension",
+        "typeHandlerVersion": "1.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {}
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('vmName'), copyIndex(), '/CustomScript')]",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-06-15",
+      "dependsOn": [
+        "virtualMachineLoop"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "commandToExecute": "apt-get -y update && apt-get -y install aptitude apt-transport-https ca-certificates software-properties-common curl"
         }
       }
     }
