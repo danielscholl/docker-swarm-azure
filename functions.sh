@@ -295,7 +295,7 @@ function CreateLoadBalancerRule() {
     --name $SECURITY_NAME \
     -ojsonc)
 
-  local _highest=$(az network nsg rule list --resource-group dks8-docker-swarm-azure --nsg-name subnet-nsg --query [].priority -otsv | sort -nr | head -n1)
+  local _highest=$(az network nsg rule list --resource-group ${RESOURCE_GROUP} --nsg-name subnet-nsg --query [].priority -otsv | sort -nr | head -n1)
   local _priority=$((_highest + 10))
   if [ "$_rule"  == "" ]
     then
