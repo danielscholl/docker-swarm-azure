@@ -309,7 +309,7 @@ function CreateLoadBalancerRule() {
       --source-address-prefix '*' \
       --source-port-range '*' \
       --destination-address-prefix '*' \
-      --destination-port-range 80 \
+      --destination-port-range $PORT_DEST \
       --priority $_priority
 
     else
