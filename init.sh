@@ -132,5 +132,5 @@ azure_clientsecret: $(echo $PRINCIPAL |awk '{print $2'})
 
 azure_storageaccount: ${STORAGE_ACCOUNT}
 azure_storageaccesskey: ${STORAGE_KEY}
-azure_container: ${STORAGE_CONTAINER}
+azure_container: rexray
 EOF2

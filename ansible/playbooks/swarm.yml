@@ -1,9 +1,9 @@
 ---
-- hosts: all
+
+- hosts: manager
   become: true
   roles:
     - swarm-manager
-
 
 - hosts: swarm_manager_bootstrap[0]
   become: true
