@@ -159,3 +159,58 @@ services:
     deploy:
       replicas: 10
 ```
+
+## Rolling Updates
+
+```bash
+# Watch Services Running
+watch -n1 "docker service ps myService |grep -v Shutdown.*Shutdown"
+
+# Update with changed policy
+docker service update myService --update-parallelism 2 --update-delay 5s
+
+# Rollback while in process deployment
+docker service update myService --rollback
+
+```
+
+## Swarmkit Tools
+
+```bash
+# Build the tools
+docker run -v /usr/local/bin:/go/bin golang \
+  go get -v github.com/docker/swarmkit/...
+
+# Alias the Command
+alias swarmctl='sudo swarmctl \
+  --socket /var/run/docker/swarm/control.sock'
+
+# List Nodes (docker node ls)
+swarmctl node ls
+
+# View tasks across services
+swarmctl task ls
+```
+
+## Secrets
+
+```bash
+# Create a secret
+echo "shhhh don't tell" | docker secret create mySecret -
+base64 /dev/urandom | head -c24 | docker secret create secureSecret -
+
+# Run a service using secret
+docker service create \
+  --secret mySecret --secret secureSecret \
+  --name dummyservice --mode global \
+  alpine sleep 1000000000
+CID=$(docker ps -q --filter label=com.docker.swarm.service.name=dummyservice)
+docker exec -it $CID sh
+$ cat /run/secrets/mySecret
+$ cat /run/secrets/secureSecret
+
+
+
+# Mount a container to access secret
+CID=$()
+```
