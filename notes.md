@@ -71,9 +71,9 @@ git clone git://github.com/dockersamples/docker-swarm-visualizer
 cd docker-swarm-visualizer
 docker-compose up -d
 
-docker service create \
+docker service create  --name viz \
   --mount source=/var/run/docker.sock,type=bind,target=/var/run/docker.sock \
-  --name viz --constraint node.role==manager
+  --constraint node.role==manager
 ```
 
 ## Build Ship and Run single services
@@ -94,7 +94,9 @@ docker network create --driver overlay myNetwork
 docker network ls
 
 # Docker Service on a Network
-docker service create --network myNetwork --name redis redis
+docker service create --name redis \
+  --network myNetwork  \
+  redis
 ```
 
 Troubleshooting Networks [nicolaka/netshoot](https://github.com/nicolaka/netshoot)
@@ -102,7 +104,10 @@ Troubleshooting Networks [nicolaka/netshoot](https://github.com/nicolaka/netshoo
 ## Local Registry
 
 ```bash
-docker service create --name registry --publish 5000:5000 registry:2.6.2
+docker service create --name registry \
+  --publish 5000:5000 \
+  registry:2.6.2
+
 curl localhost:5000/v2/_catalog
 
 
@@ -124,6 +129,9 @@ services:
     ports:
       - "5000:5000"
     env_file: .env
+    deploy:
+      placement:
+        constraints: [node.role == manager]
 ```
 
 ```bash
@@ -200,9 +208,10 @@ echo "shhhh don't tell" | docker secret create mySecret -
 base64 /dev/urandom | head -c24 | docker secret create secureSecret -
 
 # Run a service using secret
-docker service create \
-  --secret mySecret --secret secureSecret \
-  --name dummyservice --mode global \
+docker service create --name dummyservice \
+  --secret mySecret \
+  --secret secureSecret \
+  --mode global \
   alpine sleep 1000000000
 CID=$(docker ps -q --filter label=com.docker.swarm.service.name=dummyservice)
 docker exec -it $CID sh
@@ -213,4 +222,33 @@ $ cat /run/secrets/secureSecret
 
 # Mount a container to access secret
 CID=$()
+```
+
+
+## Container Logging to ELK
+
+```bash
+# Create a logging network
+docker network create --driver overlay elk_logging
+
+# Create an elastic search service
+docker service create --name elasticsearch\
+  --network elk_logging \
+  --constraint 'node.role==worker' \
+  elasticsearch:2.4
+
+# Create a Kibana service
+docker service create --name kibana \
+  --network elk_logging \
+  --publish 5601:5601 \
+  --constraint 'node.role==worker' \
+  kibana:4.6 -e ELASTICSEARCH_URL=http://elasticsearch:9200
+
+# Create the Logstash Service
+docker service create --name logstash \
+  --network elk_logging \
+  --publish 12201:12201/udp \
+  --constraint 'node.role==worker' \
+  logstash:2.4 -e "$(cat ./apps/elk/logstash.conf)" 
+
 ```

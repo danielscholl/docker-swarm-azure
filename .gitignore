@@ -3,3 +3,4 @@ ansible/inventories/
 ansible/playbooks/*.retry
 arm-templates/*.params.json
 .ssh/
+.env

@@ -1,0 +1,68 @@
+version: "3.1"
+
+services:
+  elasticsearch:
+    image: elasticsearch:2.4
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+    deploy:
+      placement:
+        constraints: [node.role == worker]
+    networks:
+      - logging
+  kibana:
+    image: kibana:4.6
+    depends_on: ['elasticsearch']
+    ports:
+      - "5601:5601"
+    networks:
+      - logging
+  logstash:
+    image: logstash:2.4
+    depends_on: ['kibana']
+    ports:
+      - "12201:12201/udp"
+    environment:
+      LOGSTASH: |
+        input {
+          # Listens on 514/udp and 514/tcp by default; change that to non-privileged port
+          syslog { port => 51415 }
+          # Default port is 12201/udp
+          gelf { }
+          # This generates one test event per minute.
+          # It is great for debugging, but you might
+          # want to remove it in production.
+          heartbeat { }
+        }
+        # The following filter is a hack!
+        # The "de_dot" filter would be better, but it
+        # is not pre-installed with logstash by default.
+        filter {
+          ruby {
+            code => "
+              event.to_hash.keys.each { |k| event[ k.gsub('.','_') ] = event.remove(k) if k.include?'.' }
+            "
+          }
+        }
+        output {
+          elasticsearch {
+            hosts => ["elasticsearch:9200"]
+          }
+          # This will output every message on stdout.
+          # It is great when testing your setup, but in
+          # production, it will probably cause problems;
+          # either by filling up your disks, or worse,
+          # by creating logging loops! BEWARE!
+          stdout {
+            codec => rubydebug
+          }
+        }
+
+
+    deploy:
+      placement:
+        constraints: [node.role == worker]
+    networks:
+      - logging
+networks:
+  logging:
