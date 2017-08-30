@@ -11,8 +11,6 @@ services:
       xpack.watcher.enabled: 'false'
     volumes:
       - esdata:/usr/share/elasticsearch/data
-    ports:
-      - 9200:9200
     networks:
       - esnet
     deploy:
@@ -23,10 +21,40 @@ services:
 
   logstash:
     build: logstash
+    image: 127.0.0.1:5000/logstash
     networks:
       - esnet
     depends_on:
       - elasticsearch
+    deploy:
+      replicas: 1
+
+  logspout:
+    image: bekt/logspout-logstash
+    networks:
+      - esnet
+    environment:
+      ROUTE_URIS: 'logstash://logstash:5100'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - logstash
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:5.3.2
+    ports:
+      - '80:5601'
+    depends_on:
+      - elasticsearch
+    environment:
+      ELASTICSEARCH_URL: 'http://elasticsearch:9200'
+      XPACK_SECURITY_ENABLED: 'false'
+      XPACK_MONITORING_ENABLED: 'false'
     deploy:
       replicas: 1
 

@@ -31,6 +31,7 @@
     - docker-ce
     - python-dev
     - python-pip
+    - htop
 
 
   # ATTENTION: this task can potentially create new users!
@@ -53,3 +54,8 @@
     - { name: pip, version: 9.0.1 }
     - { name: docker-compose, version: 1.14.0 }
   when: item.version=="latest"
+
+# Install Container Top Utility
+- name: Install Container Top
+  become: yes
+  shell: wget https://github.com/bcicen/ctop/releases/download/v0.6.1/ctop-0.6.1-linux-amd64 -O /usr/local/bin/ctop && chmod +x /usr/local/bin/ctop

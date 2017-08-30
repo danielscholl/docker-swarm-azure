@@ -13,58 +13,84 @@ docker service create \
   --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock \
   dockersamples/visualizer
 
-# Add a LB rule to access the Visualizer
+# Add a LB rule to access the Visualizer (Optional)
 ./lb.sh <unique> create visualizer 8080:8080
 ```
+
+Private Registry Swarm
+---
+
+Set the environment file (.env) with the proper values
+```bash
+REGISTRY_STORAGE=azure
+REGISTRY_STORAGE_AZURE_ACCOUNTNAME=<your_account_name>
+REGISTRY_STORAGE_AZURE_ACCOUNTKEY=<your_account_key>
+REGISTRY_STORAGE_AZURE_CONTAINER=<your_container>
+```
+
+
+Deploy the Private Registry Stack
+```bash
+# Deploy the Private Registry Stack
+docker stack deploy --compose-file registry/docker-stack.yml registry
+
+# Add a LB rule to access Private Registry WebSite (Optional)
+./lb.sh <unique> create visualizer 8081:5001
+```
+
+
 
 Hello World Test
 ---
 
 ```bash
 # Start the Stack
-docker stack deploy --compose-file docker-stack.yml helloworld
+docker stack deploy --compose-file helloworld/docker-stack.yml helloworld
 
-# Remove the Statck
+# Remove the Stack
 docker stack rm helloworld
 ```
 
-Private Registry Swarm
----
 
-Bring up Private Registry on the Swarm
-```bash
-docker service create --name registry \
-  --publish 5000:5000 \
-  registry:2.6.2
-
-curl localhost:5000/v2/_catalog
-```
-
-Bring up Private Registry on the LocalBox
-```bash
-docker-compose up -d
-http://localhost:5001
-```
 
 ELK Deploy
 ---
 
-Build the Stack
+Run Private Registry on a localhost Computer (Not Swarm)
 ```bash
-REGISTRY=localhost:5000 TAG=latest
-docker-compose build
+# Docker Compose up the Registry
+docker-compose -d -f registry/docker-stack.yml up
+
+#or
+docker run -d -p 5000:5000 --name=registry \
+  -e REGISTRY_STORAGE=azure \
+  -e REGISTRY_STORAGE_AZURE_CONTAINER="registry" \
+  -e REGISTRY_STORAGE_AZURE_ACCOUNTNAME="<your_account>" \
+  -e REGISTRY_STORAGE_AZURE_ACCOUNTKEY="<your_key>" \
+  registry:2
+
+# View Registry on localhost
+http://localhost:5001/home
+```
+
+
+Build the Stack on a localhost Computer (Not Swarm)
+```bash
+REGISTRY=127.0.0.1:5000 TAG=latest
+docker-compose -f elk/docker-stack.yml build
 
 for SERVICE in logstash; do
   docker tag elk_$SERVICE $REGISTRY/$SERVICE:$TAG
   docker push $REGISTRY/$SERVICE
 done
+```
 
-## Local Registry
+Deploy the Elk Stack
+```bash
+# Start the Stack
+docker stack deploy --compose-file elk/docker-stack.yml elk
 
-
-
-REGISTRY=localhost:5000 TAG=1.0
-for SERVICE in folderA folderB folderC; do
-  docker tag myapp_$SERVICE $REGISTRY/$SERVICE:$TAG
-  docker push $REGISTRY/$SERVICE
-done
+# Remove the Stack
+docker stack rm elk
+```
+>Note: Full spin up time for Elk is about 5 minutes dependent upon how many nodes and CPU.
