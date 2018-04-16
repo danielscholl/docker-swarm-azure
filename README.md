@@ -114,7 +114,7 @@ The first step is to deploy the custom ARM Templates using the init.sh script.  
 - count (The number of Nodes desired to be created  ie: 3)
 
 ```bash
-./init.sh abc 3
+./init.sh demo 3
 ```
 
 
@@ -218,7 +218,7 @@ Create a new volume:
 
 Delete a volume:
 
-`sudo rexray volume rm b4219d9e-c835-431f-8ed8-a7f4a3838ddf`
+`sudo rexray volume rm testVolume.vhd`
 
 ## Docker
 Consult the Docker documentation [here](https://docs.docker.com/engine/admin/volumes/volumes/#choosing-the--v-or-mount-flag).  
