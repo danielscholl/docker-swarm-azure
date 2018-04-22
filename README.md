@@ -28,7 +28,7 @@ Access to the servers is via a private ssh session and requires the user to crea
 
 ```bash
 mkdir .ssh && cd .ssh
-ssh-keygen -t rsa -b 2048 -C "azureuser@email.com" -f id_rsa
+ssh-keygen -t rsa -b 2048 -C $(az account show --query user.name -otsv) -f id_rsa
 ```
 
 
@@ -48,7 +48,7 @@ export AZURE_LOCATION=<region_location>
 
 Copy the deployAzure.params_sample.json file to deployAzure.params.json located in the arm-templates directory.
 
-4 parameter values are required in order to begin.
+3 parameter values are required in order to begin.
 
 - adminUser (Logged in User of your local machine)
   - __Command:__ `whoami`
@@ -59,17 +59,12 @@ Copy the deployAzure.params_sample.json file to deployAzure.params.json located 
 - remoteAccessACL: (Public IP Address of your local machine to be used to grant firewall ssh access)
   - __Command:__ `curl ifconfig.co`
 
-- servicePrincipalAppId  (Object ID of your user to be used for access to KeyVaults)
-  - __Command:__ `az ad user show --upn user@email.com`
 
 ```json
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "servicePrincipalAppId": {
-      "value": "<your_principle_guid>"
-    },
     "adminUser": {
       "value": "<whoami>"
     },

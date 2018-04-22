@@ -45,6 +45,10 @@ CATEGORY=${PWD##*/}
 RESOURCE_GROUP=${UNIQUE}-${CATEGORY}
 CONTAINER='rexray'
 
+tput setaf 2; echo "Retrieving Logged in User Principal..." ; tput sgr0
+EMAIL=$(az account show --query user.name -otsv)
+SP=$(az ad user show --upn ${EMAIL} --query objectId -otsv)
+
 tput setaf 2; echo "Creating the $RESOURCE_GROUP resource group..." ; tput sgr0
 CreateResourceGroup ${RESOURCE_GROUP} ${AZURE_LOCATION};
 az group show --name ${RESOURCE_GROUP} -ojsonc
@@ -55,6 +59,7 @@ az group deployment create \
   --template-file arm-templates/deployAzure.json \
   --parameters @arm-templates/deployAzure.params.json \
   --parameters unique=${UNIQUE} serverCount=${COUNT}\
+  --parameters servicePrincipalAppId=${SP} \
   -ojsonc
 
 tput setaf 2; echo "Creating the $CONTAINER blob container..." ; tput sgr0
