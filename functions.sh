@@ -88,6 +88,80 @@ function CreateBlobContainer() {
     --connection-string $2 \
     -ojsonc
 }
+function CreateFileShare() {
+  # Required Argument $1 = CONTAINER_NAME
+  # Required Argument $2 CONNECTION
+
+  if [ -z $1 ]; then
+    tput setaf 1; echo 'ERROR: Argument $1 (CONTAINER_NAME) not received' ; tput sgr0
+    exit 1;
+  fi
+  if [ -z $2 ]; then
+    tput setaf 1; echo 'ERROR: Argument $2 (STORAGE_CONNECTION) not received' ; tput sgr0
+    exit 1;
+  fi
+
+  az storage share create --name $1 \
+    --quota 2048 \
+    --connection-string $2 \
+    -ojsonc
+}
+function CreateFileShareDir() {
+  # Required Argument $1 = DIRECTORY_NAME
+  # Required Argument $2 = SHARE_NAME
+  # Required Argument $3 CONNECTION
+
+  if [ -z $1 ]; then
+    tput setaf 1; echo 'ERROR: Argument $1 (DIRECTORY_NAME) not received' ; tput sgr0
+    exit 1;
+  fi
+  if [ -z $2 ]; then
+    tput setaf 1; echo 'ERROR: Argument $2 (SHARE_NAME) not received' ; tput sgr0
+    exit 1;
+  fi
+  if [ -z $3 ]; then
+    tput setaf 1; echo 'ERROR: Argument $3 (STORAGE_CONNECTION) not received' ; tput sgr0
+    exit 1;
+  fi
+
+  az storage directory create --name $1 \
+    --share-name $2 \
+    --connection-string $3 \
+    -ojsonc
+}
+function UploadFile() {
+  # Required Argument $1 = SOURCE
+  # Required Argument $2 = SHARE_NAME
+  # Required Argument $3 CONNECTION
+
+  if [ -z $1 ]; then
+    tput setaf 1; echo 'ERROR: Argument $1 (SOURCE) not received' ; tput sgr0
+    exit 1;
+  fi
+  if [ -z $2 ]; then
+    tput setaf 1; echo 'ERROR: Argument $2 (SHARE_NAME) not received' ; tput sgr0
+    exit 1;
+  fi
+  if [ -z $3 ]; then
+    tput setaf 1; echo 'ERROR: Argument $3 (STORAGE_CONNECTION) not received' ; tput sgr0
+    exit 1;
+  fi
+
+  if [[ $1 =~ .*\..* ]]
+  then
+    az storage file upload --source $1 --path $1 \
+    --share-name $2 \
+    --connection-string $3 \
+    -ojsonc
+  else
+    az storage file upload --source $1 --path "$1." \
+    --share-name $2 \
+    --connection-string $3 \
+    -ojsonc
+  fi
+
+
+}
 function CreateSASToken() {
   # Required Argument $1 CONTAINER_NAME
   # Required Argument $2 = CONNECTION
