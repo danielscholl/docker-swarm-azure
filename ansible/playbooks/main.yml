@@ -25,6 +25,7 @@
 - hosts: manager
   become: true
   roles:
+    - file-share
     - swarm-manager
 
 

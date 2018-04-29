@@ -39,26 +39,28 @@ az account set --subscription ${AZURE_SUBSCRIPTION}
 ##############################
 ## Folder Sync              ##
 ##############################
+BASE_DIR="$PWD"
+cd $CONTAINER
+
 tput setaf 2; echo "Creating the $CONTAINER file share..." ; tput sgr0
 STORAGE_ACCOUNT=$(GetStorageAccount $RESOURCE_GROUP)
+STORAGE_KEY=$(GetStorageAccountKey $RESOURCE_GROUP $STORAGE_ACCOUNT)
 CONNECTION=$(GetStorageConnection $RESOURCE_GROUP $STORAGE_ACCOUNT)
-
 CreateFileShare $CONTAINER $CONNECTION
 
-BASE_DIR="$PWD"
-cd $CONTAINER && DIRS=`find * -type d` && cd ..
-
-for d in $DIRS
+# Create Directory Structure
+for d in $(find * -type d)
 do
   tput setaf 2; echo "Creating the directory $d..." ; tput sgr0
   CreateFileShareDir $d $CONTAINER $CONNECTION
 done
 
-
-cd $CONTAINER
-FILES=$(find **/* -type f)
-for f in $FILES
+# Upload Files
+for f in $(find * -type f)
 do
   tput setaf 2; echo "Uploading the file $f..." ; tput sgr0
   UploadFile $f $CONTAINER $CONNECTION
 done
+
+cd ..
+ansible manager -a "mount -t cifs //$STORAGE_ACCOUNT.file.core.windows.net/$CONTAINER $CONTAINER -o vers=3.0,username=$STORAGE_ACCOUNT,password=$STORAGE_KEY,dir_mode=0777,file_mode=0777,sec=ntlmssp" --become

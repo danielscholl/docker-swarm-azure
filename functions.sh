@@ -50,6 +50,26 @@ function GetStorageAccount() {
   local _storage=$(az storage account list --resource-group $1 --query [].name -otsv)
   echo ${_storage}
 }
+function GetStorageAccountKey() {
+  # Required Argument $1 = RESOURCE_GROUP
+  # Required Argument $2 = STORAGE_ACCOUNT
+
+  if [ -z $1 ]; then
+    tput setaf 1; echo 'ERROR: Argument $1 (RESOURCE_GROUP) not received'; tput sgr0
+    exit 1;
+  fi
+  if [ -z $2 ]; then
+    tput setaf 1; echo 'ERROR: Argument $2 (STORAGE_ACCOUNT) not received'; tput sgr0
+    exit 1;
+  fi
+
+  local _result=$(az storage account keys list \
+    --resource-group $1 \
+    --account-name $2 \
+    --query '[0].value' \
+    --output tsv)
+  echo ${_result}
+}
 function GetStorageConnection() {
   # Required Argument $1 = RESOURCE_GROUP
   # Required Argument $2 = STORAGE_ACCOUNT
@@ -159,8 +179,6 @@ function UploadFile() {
     --connection-string $3 \
     -ojsonc
   fi
-
-
 }
 function CreateSASToken() {
   # Required Argument $1 CONTAINER_NAME

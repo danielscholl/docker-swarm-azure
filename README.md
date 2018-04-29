@@ -186,7 +186,12 @@ Check and validate ansible connectivity once provisioning has been completed and
 ```bash
 ansible all -m ping  #Check Connectivity
 ansible-playbook ansible/playbooks/main.yml  # Provision the node Servers
+```
 
+### Upload Apps to File Share
+
+```bash
+./sync.sh demo
 ```
 
 ## Script Usage
