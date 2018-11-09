@@ -89,7 +89,7 @@
       "comments": "## Availability Set ##",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('AvailabilitySetName')]",
-      "apiVersion": "2016-04-30-preview",
+      "apiVersion": "2018-06-01",
       "location": "[resourceGroup().location]",
       "properties": {
         "platformUpdateDomainCount": 6,
@@ -101,7 +101,7 @@
       "comments": "## Storage Account ##",
       "name": "[variables('storageAccountName')]",
       "type": "Microsoft.Storage/storageAccounts",
-      "apiVersion": "2016-01-01",
+      "apiVersion": "2018-07-01",
       "location": "[resourceGroup().location]",
       "tags": {
         "displayName": "Storage Account"
@@ -126,7 +126,7 @@
       "comments": "## Network Interface ##",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(parameters('vmName'), copyindex(), '-nic')]",
-      "apiVersion": "2016-03-30",
+      "apiVersion": "2018-08-01",
       "location": "[resourceGroup().location]",
       "tags": {},
       "copy": {
@@ -161,7 +161,7 @@
       "comments": "## Virtual Machine ##",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(parameters('vmName'), copyIndex())]",
-      "apiVersion": "2016-04-30-preview",
+      "apiVersion": "2018-06-01",
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "virtualMachineLoop",
@@ -221,7 +221,7 @@
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(parameters('vmName'), copyIndex(), '/LinuxDiagnostic')]",
-      "apiVersion": "2016-04-30-preview",
+      "apiVersion": "2018-06-01",
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "extLoop",
@@ -248,7 +248,7 @@
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(parameters('vmName'), copyIndex(), '/DockerExtension')]",
-      "apiVersion": "2016-04-30-preview",
+      "apiVersion": "2018-06-01",
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "extDockerLoop",
@@ -260,7 +260,7 @@
       "properties": {
         "publisher": "Microsoft.Azure.Extensions",
         "type": "DockerExtension",
-        "typeHandlerVersion": "1.0",
+        "typeHandlerVersion": "1.2.2",
         "autoUpgradeMinorVersion": true,
         "settings": {}
       }

@@ -83,6 +83,13 @@
         "Standard_GRS",
         "Premium_LRS"
       ]
+    },
+    "templateURL": {
+      "type": "string",
+      "metadata": {
+        "description": "URL Location on where to find the templates"
+      },
+      "defaultValue": "https://raw.githubusercontent.com/danielscholl/docker-swarm-azure/master/arm-templates/nested/"
     }
   },
   "variables": {},
@@ -90,11 +97,11 @@
     {
       "name": "TemplateStorage",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2015-01-01",
+      "apiVersion": "2017-05-10",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/docker-swarm-azure/master/arm-templates/nested/', 'deployStorageAccount.json')]",
+          "uri": "[concat(parameters('templateURL'), 'deployStorageAccount.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -107,11 +114,11 @@
     {
       "name": "TemplateKeyVault",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2015-01-01",
+      "apiVersion": "2017-05-10",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/docker-swarm-azure/master/arm-templates/nested/', 'deployKeyVault.json')]",
+          "uri": "[concat(parameters('templateURL'), 'deployKeyVault.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -133,11 +140,11 @@
     {
       "name": "TemplateVNet",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2015-01-01",
+      "apiVersion": "2017-05-10",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/docker-swarm-azure/master/arm-templates/nested/', 'deployVNet.json')]",
+          "uri": "[concat(parameters('templateURL'), 'deployVNet.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -159,11 +166,11 @@
     {
       "name": "TemplateLoadBalancer",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2015-01-01",
+      "apiVersion": "2017-05-10",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/docker-swarm-azure/master/arm-templates/nested/', 'deployLoadBalancer.json')]",
+          "uri": "[concat(parameters('templateURL'), 'deployLoadBalancer.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -179,11 +186,11 @@
     {
       "name": "TemplateVirtualMachine",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2015-01-01",
+      "apiVersion": "2017-05-10",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/docker-swarm-azure/master/arm-templates/nested/', 'deployVirtualMachineAS.json')]",
+          "uri": "[concat(parameters('templateURL'), 'deployVirtualMachineAS.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {

@@ -43,7 +43,7 @@
       "comments": "## Network Security Group ##",
       "name": "[variables('nsg1Name')]",
       "type": "Microsoft.Network/networkSecurityGroups",
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2018-08-01",
       "location": "[resourceGroup().location]",
       "tags": {
         "displayName": "Network Security Group - Subnet"
@@ -113,7 +113,7 @@
       "comments": "## Virtual Network ##",
       "name": "[variables('VNetName')]",
       "type": "Microsoft.Network/virtualNetworks",
-      "apiVersion": "2016-03-30",
+      "apiVersion": "2018-08-01",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg1Name'))]"

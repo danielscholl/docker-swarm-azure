@@ -41,7 +41,7 @@
       "comments": "## Load Balancer ##",
       "name": "[variables('LBName')]",
       "type": "Microsoft.Network/loadBalancers",
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2016-03-30",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[concat('Microsoft.Network/publicIPAddresses/', variables('PublicIpName'))]"
@@ -126,7 +126,7 @@
       }
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2016-03-30",
       "type": "Microsoft.Network/loadBalancers/inboundNatRules",
       "name": "[concat(variables('LBName'), '/', 'ssh-vm', copyIndex())]",
       "location": "[resourceGroup().location]",
@@ -148,7 +148,7 @@
       }
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2016-03-30",
       "type": "Microsoft.Network/loadBalancers/inboundNatRules",
       "name": "[concat(variables('LBName'), '/', 'swarm-manager')]",
       "location": "[resourceGroup().location]",
