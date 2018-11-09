@@ -9,7 +9,7 @@
   become: no
   shell: whoami
   register: user
-- debug: msg="{{ user.stdout }} "
+- debug: msg="{{ user.stdout }}"
 
 - name: Add Docker repository key
   apt_key:

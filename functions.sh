@@ -214,6 +214,11 @@ function CreateServicePrincipal() {
         exit 1;
     fi
 
+    if [ -z $2 ]; then
+        tput setaf 1; echo 'ERROR: Argument $2 (RESOURCE_GROUP) not received'; tput sgr0
+        exit 1;
+    fi
+
     local _result=$(az ad sp list --display-name $1 --query [].appId -otsv)
     if [ "$_result"  == "" ]
     then
@@ -224,7 +229,7 @@ function CreateServicePrincipal() {
       CLIENT_SECRET=$(az ad sp create-for-rbac \
         --name $1 \
         --role contributor \
-        --scopes /subscriptions/$AZURE_SUBSCRIPTION/resourceGroups/$RESOURCE_GROUP \
+        --scopes /subscriptions/$AZURE_SUBSCRIPTION/resourceGroups/$2 \
         --query password -otsv)
       CLIENT_ID=$(az ad sp list \
         --display-name $1 \
