@@ -201,6 +201,67 @@ function CreateSASToken() {
   --output tsv)
   echo ${_token}
 }
+function CreateServicePrincipal() {
+    # Required Argument $1 = PRINCIPAL_NAME
+
+    # Create with customized contributor assignments.
+    #     az ad sp create-for-rbac -n "MyApp" --role contributor \
+    #         --scopes /subscriptions/{SubID}/resourceGroups/{ResourceGroup1} \
+    #         /subscriptions/{SubID}/resourceGroups/{ResourceGroup2}
+
+    if [ -z $1 ]; then
+        tput setaf 1; echo 'ERROR: Argument $1 (PRINCIPAL_NAME) not received'; tput sgr0
+        exit 1;
+    fi
+
+    local _result=$(az ad sp list --display-name $1 --query [].appId -otsv)
+    if [ "$_result"  == "" ]
+    then
+      # CLIENT_SECRET=$(az ad sp create-for-rbac \
+      #   --name $1 \
+      #   --skip-assignment \
+      #   --query password -otsv)
+      CLIENT_SECRET=$(az ad sp create-for-rbac \
+        --name $1 \
+        --role contributor \
+        --scopes /subscriptions/$AZURE_SUBSCRIPTION/resourceGroups/$RESOURCE_GROUP \
+        --query password -otsv)
+      CLIENT_ID=$(az ad sp list \
+        --display-name $1 \
+        --query [].appId -otsv)
+      OBJECT_ID=$(az ad app show --id $CLIENT_ID --query objectId -otsv)
+      UNIQUE=$(echo $RANDOM | cut -c 1-3)
+
+
+      echo "" >> .envrc
+      echo "export CLIENT_ID=${CLIENT_ID}" >> .envrc
+      echo "export CLIENT_SECRET=${CLIENT_SECRET}" >> .envrc
+      echo "export OBJECT_ID=${OBJECT_ID}" >> .envrc
+      echo "export UNIQUE=${UNIQUE}" >> .envrc
+
+    else
+        tput setaf 3;  echo "Service Principal $1 already exists."; tput sgr0
+        if [ -z $CLIENT_ID ]; then
+          tput setaf 1; echo 'ERROR: Principal exists but CLIENT_ID not provided' ; tput sgr0
+          exit 1;
+        fi
+
+        if [ -z $CLIENT_SECRET ]; then
+          tput setaf 1; echo 'ERROR: Principal exists but CLIENT_SECRET not provided' ; tput sgr0
+          exit 1;
+        fi
+
+        if [ -z $OBJECT_ID ]; then
+          tput setaf 1; echo 'ERROR: Principal exists but OBJECT_ID not provided' ; tput sgr0
+          exit 1;
+        fi
+
+        if [ -z $UNIQUE ]; then
+          tput setaf 1; echo 'ERROR: UNIQUE not provided' ; tput sgr0
+          exit 1;
+        fi
+    fi
+}
 function CreateAdServicePrincipal() {
   # Required Argument $1 = RESOURCE_GROUP
 

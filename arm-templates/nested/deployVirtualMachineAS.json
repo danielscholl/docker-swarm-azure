@@ -89,12 +89,12 @@
       "comments": "## Availability Set ##",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('AvailabilitySetName')]",
-      "apiVersion": "2018-06-01",
+      "apiVersion": "2016-04-30-preview",
       "location": "[resourceGroup().location]",
       "properties": {
         "platformUpdateDomainCount": 6,
         "platformFaultDomainCount": 3,
-        "managed": false
+        "managed": true
       }
     },
     {
