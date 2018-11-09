@@ -69,12 +69,11 @@ STORAGE_ACCOUNT=$(GetStorageAccount $RESOURCE_GROUP)
 CONNECTION=$(GetStorageConnection $RESOURCE_GROUP $STORAGE_ACCOUNT)
 CreateBlobContainer $CONTAINER $CONNECTION
 
-exit
 tput setaf 2; echo 'Creating REX-ray Principal and Role Assignment...' ; tput sgr0
 PRINCIPAL_NAME="rexray-swarm-principal"
 CreateServicePrincipal $PRINCIPAL_NAME $RESOURCE_GROUP
 
-exit
+
 tput setaf 2; echo "Creating the REX-ray Service Principal..." ; tput sgr0
 PRINCIPAL=$(CreateAdServicePrincipal ${RESOURCE_GROUP})
 
